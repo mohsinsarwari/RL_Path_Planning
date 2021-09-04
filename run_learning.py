@@ -33,7 +33,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 def run_learning():
 
     # Set name of Folder to save to
-    folder = "Test_Input"
+    folder = "Test_WO_Input"
 
     try:
         os.mkdir(folder)
@@ -54,14 +54,14 @@ def run_learning():
     dt = 0.1
     total_time = 10
     # path, input, zero
-    cost_weights = [1, 100, 1]
+    cost_weights = [10, 10, 0.1]
     env = RL_env(dynamical_env, reference_env, total_time, dt, cost_weights, folder)
 
     # Setup Model Parameters
 
     policy_kwarg = dict(activation_fn=th.nn.Tanh)
     gamma=0.5
-    total_timesteps=20000
+    total_timesteps=50000
 
     # Make Model
 
