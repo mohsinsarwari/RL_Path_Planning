@@ -45,10 +45,11 @@ class RL_env(gym.Env):
     self.learned = []
     self.desired = []
     self.zero = []
-    self.costs = []
-    self.costs_path = []
-    self.costs_input = []
-    self.costs_zero = [] 
+
+    # self.costs = []
+    # self.costs_path = []
+    # self.costs_input = []
+    # self.costs_zero = [] 
 
 
     self.action_space = spaces.Box(low=np.array([-10]),\
@@ -74,14 +75,14 @@ class RL_env(gym.Env):
     self.zero.append(zero)
 
     cost_path = self.cost_weights[0]*np.linalg.norm(curr_pos - reference_pos)
-    cost_input = self.cost_weights[1]*np.linalg.norm(action)
-    cost_zero = self.cost_weights[2]*np.linalg.norm(zero)
+    cost_zero = self.cost_weights[1]*np.linalg.norm(zero)
+    cost_input = self.cost_weights[2]*np.linalg.norm(action)
     total_cost = cost_path + cost_input + cost_zero
 
-    self.costs_path.append(cost_path)
-    self.costs_input.append(cost_input)
-    self.costs_zero.append(cost_zero)
-    self.costs.append(total_cost)
+    # self.costs_path.append(cost_path)
+    # self.costs_input.append(cost_input)
+    # self.costs_zero.append(cost_zero)
+    # self.costs.append(total_cost)
 
     self.reward = -total_cost
 
@@ -97,44 +98,46 @@ class RL_env(gym.Env):
 
   def render(self, mode='console'):
 
-    plt.figure(0)
-    plt.plot(self.times, self.learned, label = "learned")
-    plt.plot(self.times, self.desired, label = "desired")
-    plt.xlabel('time')
-    # Set the y axis label of the current axis.
-    plt.ylabel('position')
-    # Set a title of the current axes.
-    plt.title('Learned vs Desired')
-    # show a legend on the plot
-    plt.legend()
-    # Display a figure.
-    plt.savefig(self.folder + "/path.png")
+    # plt.figure(2)
+    # plt.plot(self.times, self.learned, label = "learned")
+    # plt.plot(self.times, self.desired, label = "desired")
+    # plt.xlabel('time')
+    # # Set the y axis label of the current axis.
+    # plt.ylabel('position')
+    # # Set a title of the current axes.
+    # plt.title('Learned vs Desired')
+    # # show a legend on the plot
+    # plt.legend()
+    # # Display a figure.
+    # plt.savefig(self.folder + "/path.png")
 
-    plt.figure(1)
-    plt.plot(self.times, self.zero)    
-    plt.xlabel('time')
-    # Set the y axis label of the current axis.
-    plt.ylabel('y')
-    # Set a title of the current axes.
-    plt.title('Zero Dynamics')
-    # Display a figure.
-    plt.savefig(self.folder + "/zero.png")
+    # plt.figure(3)
+    # plt.plot(self.times, self.zero)    
+    # plt.xlabel('time')
+    # # Set the y axis label of the current axis.
+    # plt.ylabel('y')
+    # # Set a title of the current axes.
+    # plt.title('Zero Dynamics')
+    # # Display a figure.
+    # plt.savefig(self.folder + "/zero.png")
 
 
-    plt.figure(2)
-    plt.plot(self.times, self.costs, label="total cost")
-    plt.plot(self.times, self.costs_path, label="path cost") 
-    plt.plot(self.times, self.costs_zero, label="zero cost") 
-    plt.plot(self.times, self.costs_input, label="input cost")     
-    plt.xlabel('time')
-    # Set the y axis label of the current axis.
-    plt.ylabel('cost')
-    # Set a title of the current axes.
-    plt.title('Costs')
-    # show a legend on the plot
-    plt.legend()
-    # Display a figure.
-    plt.savefig(self.folder + "/cost.png")
+    # plt.figure(2)
+    # plt.plot(self.times, self.costs, label="total cost")
+    # plt.plot(self.times, self.costs_path, label="path cost") 
+    # plt.plot(self.times, self.costs_zero, label="zero cost") 
+    # plt.plot(self.times, self.costs_input, label="input cost")     
+    # plt.xlabel('time')
+    # # Set the y axis label of the current axis.
+    # plt.ylabel('cost')
+    # # Set a title of the current axes.
+    # plt.title('Costs')
+    # # show a legend on the plot
+    # plt.legend()
+    # # Display a figure.
+    # plt.savefig(self.folder + "/cost.png")
+
+    return self.times, self.learned, self.desired, self.zero
 
      
   def reset(self):
