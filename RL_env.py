@@ -46,20 +46,12 @@ class RL_env(gym.Env):
     self.desired = []
     self.zero = []
 
-    # self.costs = []
-    # self.costs_path = []
-    # self.costs_input = []
-    # self.costs_zero = [] 
-
-
-    self.action_space = spaces.Box(low=np.array([-10]),\
-                                    high=np.array([10]),\
-                                    dtype=np.float32)                           
+    self.action_space = dynamical_sys.action_space()                          
    
-    self.observation_space = spaces.Box(low=-10, \
-                                         high=10,\
-                                         shape=(self.dynamical_sys.size()+self.reference_sys.size(),),\
-                                         dtype=np.float32)
+    self.observation_space = self.observation_space = spaces.Box(low=-10, \
+                                 high=10,\
+                                 shape=(8,),\
+                                 dtype=np.float32)
           
   def step(self, action):
 
@@ -78,11 +70,6 @@ class RL_env(gym.Env):
     cost_zero = self.cost_weights[1]*np.linalg.norm(zero)
     cost_input = self.cost_weights[2]*np.linalg.norm(action)
     total_cost = cost_path + cost_input + cost_zero
-
-    # self.costs_path.append(cost_path)
-    # self.costs_input.append(cost_input)
-    # self.costs_zero.append(cost_zero)
-    # self.costs.append(total_cost)
 
     self.reward = -total_cost
 

@@ -1,14 +1,20 @@
 #! /usr/bin/python 
 """
-Created on Mon Sep 21 13:56:31 2020
-#TODO
-1.get test logs to save to log directory
-2.pass spline parameters in outputs
-3.
-4.adapt bicycle_gym_env to new format
-5.integrate option to choose environment
-6.jet engine example?
-@author: mkest
+@Mohsin
+
+
+This is the file that will train the model. 
+
+Configure the model and environment parameters here.
+
+@params param_dict: dictionary of parameters
+
+@params root_path: folder where this training should be saved
+
+@params folder_name: new folder in root_path we want to save to
+
+@return model, env
+
 """
 
 import os
@@ -30,6 +36,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
+
 
 def run_learning(param_dict, root_path, folder_name):
 
@@ -108,18 +115,10 @@ def run_learning(param_dict, root_path, folder_name):
     # Execute learning 
     print("Executing Learning...")  
     model.learn(total_timesteps=total_timesteps, callback=callback)
-    
-    # Execute Evaluation
-    print("Executing Evaluation...")
-    obs = env.reset()
-    done = False
-    while not done:
-        action, _states = model.predict(obs)
-        obs, rewards, done, info = env.step(action)
 
     print("Done running learning")
     
-    return env.render()
+    return model, env
 
 
 if __name__=="__main__":

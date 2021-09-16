@@ -22,25 +22,37 @@ class Base_env():
   System:
   x_dot = u
   y_dot = x + by
-  s_1_dot = s_2
-  s_2_dot = -s_1
   """
 
-  def __init__(self, b, low=-3, high=3):
+  def __init__(self, b, low=-3, high=3, test=False, initial_state=[0, 0, 0, 0]):
 
     self.low = low
     self.high = high
 
-    self.state = np.random.randint(low=low, high=high, size=2)
-    self.derivatives = np.random.randint(low=low, high=high, size=2)
+    self.test = test
+    self.initial_state = initial_state
+
+    if test:
+      self.state = initial_state[:2]
+      self.derivatives = initial_state[2:]     
+    else:
+      self.state = np.random.randint(low=low, high=high, size=2)
+      self.derivatives = np.random.randint(low=low, high=high, size=2)
+
+    self.action_space = spaces.Box(low=np.array([-10]),\
+                                    high=np.array([10]),\
+                                    dtype=np.float32)                           
 
     self.b = b
 
   def set_dt(self, dt):
     self.dt = dt
 
-  def size(self):
-    return 4
+  def action_space(self):
+    return self.action_space
+
+  def observation_space(self):
+    return self.observation_space
 
           
   def step(self, action):
@@ -60,8 +72,12 @@ class Base_env():
      
   def reset(self):
 
-    self.state = np.random.randint(self.low, high=self.high, size=2)
-    self.derivatives = np.random.randint(self.low, high=self.high, size=2)
+    if self.test:
+      self.state = initial_state[:2]
+      self.derivatives = initial_state[2:]     
+    else:
+      self.state = np.random.randint(low=low, high=high, size=2)
+      self.derivatives = np.random.randint(low=low, high=high, size=2)
 
     return np.append(self.state, self.derivatives)
     
