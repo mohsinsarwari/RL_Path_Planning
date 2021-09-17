@@ -108,7 +108,7 @@ def run_learning(param_dict, root_path, folder_name):
                 gamma = gamma,
                 use_sde = True,
                 policy_kwargs=policy_kwarg,
-                verbose = 1,
+                verbose = 0,
                 device='cuda',
                 )
 

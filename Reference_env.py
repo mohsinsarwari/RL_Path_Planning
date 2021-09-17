@@ -68,11 +68,11 @@ class Reference_env():
     """
 
     if self.test:
-      self.state = initial_state[:self.dim]
-      self.derivatives = initial_state[self.dim:]     
+      self.state = self.initial_state[:self.dim]
+      self.derivatives = self.initial_state[self.dim:]     
     else:  
-      self.state = np.random.randint(low, high=high, size=self.dim)
-      self.derivatives = np.random.randint(low, high=high, size=self.dim)
+      self.state = np.random.randint(self.low, high=self.high, size=self.dim)
+      self.derivatives = np.random.randint(self.low, high=self.high, size=self.dim)
 
     return np.append(self.state, self.derivatives)
     

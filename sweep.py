@@ -6,6 +6,10 @@ import torch as th
 import os
 import matplotlib.pyplot as plt
 
+from Base_env import Base_env
+from Reference_env import Reference_env
+from RL_env import RL_env
+
 # This file is designed to hyperparameter sweep over two parameters in one go (so that the results can be plotted in a grid)
 
 
@@ -26,12 +30,12 @@ print("Starting Sweep")
 
 
 #1st sweeping parameter: cost_weights
-#cost_weights_sweep = [[100, 10, 0.1], [20, 10, 0.1], [1, 10, 0.1], [5, 10, 0.1], [1, 10, 0.1]]
-cost_weights_sweep = [[10, 10, 0.1], [10, 5, 0.1]]
+cost_weights_sweep = [[20, 10, 0.1], [10, 10, 0.1], [5, 10, 0.1], [1, 10, 0.1], [0.1, 10, 0.1]]
+#cost_weights_sweep = [[10, 10, 0.1], [10, 5, 0.1]]
 
 #2nd sweeping parameter: gamma
-#gamma_sweep = [0.1, 0.3, 0.5, 0.7, 0.9]
-gamma_sweep = [0.1, 0.2]
+gamma_sweep = [0.90, 0.92, 0.94, 0.96, 0.98]
+#gamma_sweep = [0.1, 0.2]
 
 #Set rest of parameters:
 
@@ -50,7 +54,7 @@ total_time = 10
 
 #model
 #gamma=0.5
-total_timesteps=100
+total_timesteps=100000
 eval_freq=total_timesteps//3
 save_freq=total_timesteps//3
 policy_kwarg = dict(activation_fn=th.nn.Tanh)
@@ -67,24 +71,13 @@ param_dict = {
 	'save_freq': save_freq,
 }
 
+num_rows = len(cost_weights_sweep)
 
-f_path_small, ax_path_small = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_zero_small, ax_zero_small = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_path_small.suptitle("Gamma vs cost_weights Small Amp")
-f_zero_small.suptitle("Gamma vs cost_weights Small Amp")
+num_columns = len(gamma_sweep)
 
-f_path_medium, ax_path_medium = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_zero_medium, ax_zero_medium = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_path_medium.suptitle("Gamma vs cost_weights Medium Amp")
-f_zero_medium.suptitle("Gamma vs cost_weights Medium Amp")
+f, ax = plt.subplots(num_rows*2, num_columns*3, sharex=True, sharey=True, figsize=(40, 40))
+f.suptitle("Gamma vs Cost_weights")
 
-f_path_large, ax_path_large = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_zero_large, ax_zero_large = plt.subplots(len(cost_weights_sweep), len(gamma_sweep), sharex=True, sharey=True, figsize=(15, 15))
-f_path_large.suptitle("Gamma vs cost_weights Large Amp")
-f_zero_large.suptitle("Gamma vs cost_weights Large Amp")
-
-num_run = len(cost_weights_sweep)*len(gamma_sweep)
-curr = 1
 for i in range(len(cost_weights_sweep)):
 	for j in range(len(gamma_sweep)):
 
@@ -94,86 +87,43 @@ for i in range(len(cost_weights_sweep)):
 		param_dict['gamma'] = gamma
 		param_dict['cost_weights'] = cost_weights
 
-		print("Running {0} out of {1}: ".format(curr, num_run))
-
 		model, env = run_learning(param_dict, rootdir, "{}_{}".format(gamma, cost_weights))
+
+		path = "{}_{}".format(gamma, cost_weights)
 
 		# Execute Evaluation
 		print("Executing Evaluation...")
-		small = 0.2
-		test_dynamical_env = Base_env(b=b, test=True, initial_state=np.array([0, 0, 0, 0]))
-		test_reference_env = Reference_env(internal_matrix, path_matrix, test=True, initial_state=np.array([small, small, 0, 0]))
-		test_env = RL_env(test_dynamical_env_small, test_reference_env_small, total_time, dt, cost_weights, path)
 
-		obs = test_env.reset()
-		done = False
-		while not done:
-			action, _states = model.predict(obs)
-			obs, rewards, done, info = env.step(action)
+		test_sizes = [0.2, 1, 3]
 
-		times, learned, desired, zero = env.render()
+		for k in range(3):
 
-		ax_path_small[i, j].plot(times, learned, label='learned')
-		ax_path_small[i, j].plot(times, desired, label='desired')
-		ax_path_small[i, j].set_title("{}_{}".format(gamma, cost_weights))
-		ax_path_small[i, j].legend()
-
-		ax_zero_small[i, j].plot(times, zero)
-		ax_zero_small[i, j].set_title("{}_{}".format(gamma, cost_weights))
-
-		medium = 1
-		test_dynamical_env = Base_env(b=b, test=True, initial_state=np.array([0, 0, 0, 0]))
-		test_reference_env = Reference_env(internal_matrix, path_matrix, test=True, initial_state=np.array([small, small, 0, 0]))
-		test_env = RL_env(test_dynamical_env_small, test_reference_env_small, total_time, dt, cost_weights, path)
-
-		obs = test_env.reset()
-		done = False
-		while not done:
-			action, _states = model.predict(obs)
-			obs, rewards, done, info = env.step(action)
-
-		times, learned, desired, zero = env.render()
-
-		ax_path_medium[i, j].plot(times, learned, label='learned')
-		ax_path_medium[i, j].plot(times, desired, label='desired')
-		ax_path_medium[i, j].set_title("{}_{}".format(gamma, cost_weights))
-		ax_path_medium[i, j].legend()
-
-		ax_zero_medium[i, j].plot(times, zero)
-		ax_zero_medium[i, j].set_title("{}_{}".format(gamma, cost_weights))
-
-		large = 3
-		test_dynamical_env = Base_env(b=b, test=True, initial_state=np.array([0, 0, 0, 0]))
-		test_reference_env = Reference_env(internal_matrix, path_matrix, test=True, initial_state=np.array([small, small, 0, 0]))
-		test_env = RL_env(test_dynamical_env_small, test_reference_env_small, total_time, dt, cost_weights, path)
-
-		obs = test_env.reset()
-		done = False
-		while not done:
-			action, _states = model.predict(obs)
-			obs, rewards, done, info = env.step(action)
-
-		times, learned, desired, zero = env.render()
-
-		ax_path_large[i, j].plot(times, learned, label='learned')
-		ax_path_large[i, j].plot(times, desired, label='desired')
-		ax_path_large[i, j].set_title("{}_{}".format(gamma, cost_weights))
-		ax_path_large[i, j].legend()
-
-		ax_zero_large[i, j].plot(times, zero)
-		ax_zero_large[i, j].set_title("{}_{}".format(gamma, cost_weights))
-
-		curr += 1
+			size = test_sizes[k]  
 
 
-f_path_small.savefig(os.path.join(rootdir, "sweep_path_small.png"))
-f_zero_small.savefig(os.path.join(rootdir, "sweep_zero_small.png"))
+			test_dynamical_env = Base_env(b=b, test=True, initial_state=np.array([0, 0, 0, 0]))
+			test_reference_env = Reference_env(internal_matrix, path_matrix, test=True, initial_state=np.array([size, size, 0, 0]))
+			test_env = RL_env(test_dynamical_env, test_reference_env, total_time, dt, cost_weights, path)
 
-f_path_medium.savefig(os.path.join(rootdir, "sweep_path_medium.png"))
-f_zero_medium.savefig(os.path.join(rootdir, "sweep_zero_medium.png"))
+			obs = test_env.reset()
+			done = False
+			while not done:
+				action, _states = model.predict(obs)
+				obs, rewards, done, info = test_env.step(action)
 
-f_path_large.savefig(os.path.join(rootdir, "sweep_path_large.png"))
-f_zero_large.savefig(os.path.join(rootdir, "sweep_zero_large.png"))
+			times, learned, desired, zero = test_env.render()
+
+			ax[2*i, 3*j + k].plot(times, learned, label='learned')
+			ax[2*i, 3*j + k].plot(times, desired, label='desired')
+			ax[2*i, 3*j + k].set_title("{}_{}_{}".format(gamma, cost_weights, size))
+			ax[2*i, 3*j + k].legend()
+
+			ax[2*i + 1, 3*j + k].plot(times, zero)
+			ax[2*i + 1, 3*j + k].set_title("{}_{}_{} zero".format(gamma, cost_weights, size))
+
+
+f.savefig(os.path.join(rootdir, "sweep.png"))
+
 
 print("All done!")
 

@@ -39,20 +39,12 @@ class Base_env():
       self.state = np.random.randint(low=low, high=high, size=2)
       self.derivatives = np.random.randint(low=low, high=high, size=2)
 
-    self.action_space = spaces.Box(low=np.array([-10]),\
-                                    high=np.array([10]),\
-                                    dtype=np.float32)                           
+                         
 
     self.b = b
 
   def set_dt(self, dt):
     self.dt = dt
-
-  def action_space(self):
-    return self.action_space
-
-  def observation_space(self):
-    return self.observation_space
 
           
   def step(self, action):
@@ -73,11 +65,11 @@ class Base_env():
   def reset(self):
 
     if self.test:
-      self.state = initial_state[:2]
-      self.derivatives = initial_state[2:]     
+      self.state = self.initial_state[:2]
+      self.derivatives = self.initial_state[2:]     
     else:
-      self.state = np.random.randint(low=low, high=high, size=2)
-      self.derivatives = np.random.randint(low=low, high=high, size=2)
+      self.state = np.random.randint(low=self.low, high=self.high, size=2)
+      self.derivatives = np.random.randint(low=self.low, high=self.high, size=2)
 
     return np.append(self.state, self.derivatives)
     

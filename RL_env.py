@@ -46,9 +46,11 @@ class RL_env(gym.Env):
     self.desired = []
     self.zero = []
 
-    self.action_space = dynamical_sys.action_space()                          
+    self.action_space = spaces.Box(low=np.array([-10]),\
+                                    high=np.array([10]),\
+                                    dtype=np.float32)                        
    
-    self.observation_space = self.observation_space = spaces.Box(low=-10, \
+    self.observation_space = spaces.Box(low=-10, \
                                  high=10,\
                                  shape=(8,),\
                                  dtype=np.float32)
