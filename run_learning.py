@@ -33,9 +33,11 @@ from RL_env import RL_env
 from stable_baselines3 import SAC
 from stable_baselines3.sac import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.logger import configure
 
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
+from TrainingRewardCallback import TrainingRewardCallback
 
 
 def run_learning(param_dict, root_path, folder_name):
@@ -97,9 +99,11 @@ def run_learning(param_dict, root_path, folder_name):
     #saves a copy of the current agent every save_freq times steps
     checkpoint_callback = CheckpointCallback(save_freq=save_freq, save_path=path,
                              name_prefix='rl_model')
+
+    trainingreward_callback = TrainingRewardCallback()
     
     #create list of callbacks that will be chain-called by the learning algorithm
-    callback = [eval_callback, checkpoint_callback]
+    callback = [eval_callback, checkpoint_callback, trainingreward_callback]
 
     # Make Model
 
@@ -108,9 +112,10 @@ def run_learning(param_dict, root_path, folder_name):
                 gamma = gamma,
                 use_sde = True,
                 policy_kwargs=policy_kwarg,
-                verbose = 0,
+                verbose = 1,
                 device='cuda',
                 )
+
 
     # Execute learning 
     print("Executing Learning...")  
@@ -129,10 +134,10 @@ if __name__=="__main__":
         'path_matrix': [0, 1],
         'total_time': 10,
         'dt': 0.1,
-        'total_timesteps': 2000,
+        'total_timesteps': 200,
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 1000,
-        'save_freq': 1000,
+        'eval_freq': 10,
+        'save_freq': 10,
         'gamma': 0.9,
         'cost_weights': [10, 10, 1]
     }

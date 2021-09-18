@@ -8,6 +8,7 @@
 import numpy as np
 import gym
 import time
+import os
 from gym import spaces
 from scipy import signal
 from scipy import interpolate
@@ -38,13 +39,15 @@ class RL_env(gym.Env):
 
     self.done = False
 
-    self.times = np.arange(0, self.total_time+self.dt, self.dt)
+    self.times = np.arange(0, self.total_time, self.dt)
 
     self.cost_weights = cost_weights
 
     self.learned = []
     self.desired = []
     self.zero = []
+
+    self.total_reward = 0
 
     self.action_space = spaces.Box(low=np.array([-10]),\
                                     high=np.array([10]),\
@@ -75,9 +78,11 @@ class RL_env(gym.Env):
 
     self.reward = -total_cost
 
-    self.curr_time = self.curr_time + self.dt
+    self.total_reward += self.reward
 
-    if self.curr_time >= self.total_time:
+    self.curr_time = np.round(self.curr_time + self.dt, 3)
+
+    if self.curr_time <= self.total_time:
       self.done = True
 
     return np.append(dstate, rstate), self.reward, self.done, {}
@@ -87,9 +92,9 @@ class RL_env(gym.Env):
 
   def render(self, mode='console'):
 
-    # plt.figure(2)
-    # plt.plot(self.times, self.learned, label = "learned")
-    # plt.plot(self.times, self.desired, label = "desired")
+    # plt.figure(4)
+    # plt.plot(self.times[:-1], self.learned, label = "learned")
+    # plt.plot(self.times[:-1], self.desired, label = "desired")
     # plt.xlabel('time')
     # # Set the y axis label of the current axis.
     # plt.ylabel('position')
@@ -98,20 +103,20 @@ class RL_env(gym.Env):
     # # show a legend on the plot
     # plt.legend()
     # # Display a figure.
-    # plt.savefig(self.folder + "/path.png")
+    # plt.savefig(os.path.join(self.folder, "path.png"))
 
-    # plt.figure(3)
-    # plt.plot(self.times, self.zero)    
+    # plt.figure(5)
+    # plt.plot(self.times[:-1], self.zero)    
     # plt.xlabel('time')
     # # Set the y axis label of the current axis.
     # plt.ylabel('y')
     # # Set a title of the current axes.
     # plt.title('Zero Dynamics')
     # # Display a figure.
-    # plt.savefig(self.folder + "/zero.png")
+    # plt.savefig(os.path.join(self.folder, "zero.png"))
 
 
-    # plt.figure(2)
+    # plt.figure(6)
     # plt.plot(self.times, self.costs, label="total cost")
     # plt.plot(self.times, self.costs_path, label="path cost") 
     # plt.plot(self.times, self.costs_zero, label="zero cost") 
@@ -139,6 +144,7 @@ class RL_env(gym.Env):
 
     self.curr_time = 0
     self.done=False
+    self.total_reward = 0
     self.learned = []
     self.desired = []
     self.zero = []

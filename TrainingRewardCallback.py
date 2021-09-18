@@ -1,5 +1,7 @@
 from stable_baselines3.common.callbacks import BaseCallback
-
+import matplotlib.pyplot as plt
+import numpy as np
+import os
 
 class TrainingRewardCallback(BaseCallback):
     """
@@ -26,6 +28,8 @@ class TrainingRewardCallback(BaseCallback):
         # # Sometimes, for event callback, it is useful
         # # to have access to the parent object
         # self.parent = None  # type: Optional[BaseCallback]
+        self.rewards = []
+
 
     def _on_training_start(self) -> None:
         """
@@ -50,6 +54,13 @@ class TrainingRewardCallback(BaseCallback):
 
         :return: (bool) If the callback returns False, training is aborted early.
         """
+        reward = self.training_env.get_attr("total_reward")[0]
+        curr_time = self.training_env.get_attr("curr_time")[0]
+        total_time = self.training_env.get_attr("total_time")[0]
+        dt = self.training_env.get_attr("dt")[0]
+        if curr_time > total_time - (2*dt):
+            self.rewards.append(self.training_env.get_attr("total_reward")[0])
+        
         return True
 
     def _on_rollout_end(self) -> None:
@@ -62,4 +73,7 @@ class TrainingRewardCallback(BaseCallback):
         """
         This event is triggered before exiting the `learn()` method.
         """
-        pass
+        print("Train End")
+        folder = self.training_env.get_attr("folder")[0]
+        plt.plot(np.arange(1, len(self.rewards)+1), self.rewards)
+        plt.savefig(os.path.join(folder, "test.png"))

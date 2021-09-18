@@ -48,13 +48,13 @@ path_matrix = [0, 1]
 
 #mediator
 dt = 0.1
-total_time = 10
+total_time = 5
 # path, zero, input
 #cost_weights = [10, 10, 0.1]
 
 #model
 #gamma=0.5
-total_timesteps=100000
+total_timesteps=100
 eval_freq=total_timesteps//3
 save_freq=total_timesteps//3
 policy_kwarg = dict(activation_fn=th.nn.Tanh)
@@ -89,7 +89,7 @@ for i in range(len(cost_weights_sweep)):
 
 		model, env = run_learning(param_dict, rootdir, "{}_{}".format(gamma, cost_weights))
 
-		path = "{}_{}".format(gamma, cost_weights)
+		path = os.path.join(rootdir, "{}_{}".format(gamma, cost_weights))
 
 		# Execute Evaluation
 		print("Executing Evaluation...")
