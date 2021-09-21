@@ -30,11 +30,11 @@ print("Starting Sweep")
 
 
 #1st sweeping parameter: cost_weights
-cost_weights_sweep = [[20, 10, 0.1], [10, 10, 0.1], [5, 10, 0.1], [1, 10, 0.1], [0.1, 10, 0.1]]
+cost_weights_sweep = [[6, 10, 0.1], [5, 10, 0.1], [4, 10, 0.1], [3, 10, 0.1], [2, 10, 0.1], [1, 10, 0.1]]
 #cost_weights_sweep = [[10, 10, 0.1], [10, 5, 0.1]]
 
 #2nd sweeping parameter: gamma
-gamma_sweep = [0.90, 0.92, 0.94, 0.96, 0.98]
+total_time_sweep = [10, 20, 30, 40]
 #gamma_sweep = [0.1, 0.2]
 
 #Set rest of parameters:
@@ -48,13 +48,13 @@ path_matrix = [0, 1]
 
 #mediator
 dt = 0.1
-total_time = 10
+#total_time = 10
 # path, zero, input
 #cost_weights = [10, 10, 0.1]
 
 #model
-#gamma=0.5
-total_timesteps=100000
+gamma=0.97
+total_timesteps=500000
 eval_freq=total_timesteps//3
 save_freq=total_timesteps//3
 policy_kwarg = dict(activation_fn=th.nn.Tanh)
@@ -63,7 +63,7 @@ param_dict = {
 	'b' : b,
 	'internal_matrix': internal_matrix,
 	'path_matrix': path_matrix,
-	'total_time': total_time,
+	'gamma': gamma,
 	'dt': dt,
 	'total_timesteps': total_timesteps,
 	'policy_kwarg': policy_kwarg,
@@ -73,23 +73,23 @@ param_dict = {
 
 num_rows = len(cost_weights_sweep)
 
-num_columns = len(gamma_sweep)
+num_columns = len(total_time_sweep)
 
-f, ax = plt.subplots(num_rows*2, num_columns*3, sharex=True, sharey=True, figsize=(40, 40))
+f, ax = plt.subplots(num_rows*3, num_columns*2, sharex="col", sharey="row", figsize=(50, 50))
 f.suptitle("Gamma vs Cost_weights")
 
 for i in range(len(cost_weights_sweep)):
-	for j in range(len(gamma_sweep)):
+	for j in range(len(total_time_sweep)):
 
-		gamma = gamma_sweep[j]
+		total_time = total_time_sweep[j]
 		cost_weights = cost_weights_sweep[i]
 
-		param_dict['gamma'] = gamma
+		param_dict['total_time'] = total_time
 		param_dict['cost_weights'] = cost_weights
 
-		model, env = run_learning(param_dict, rootdir, "{}_{}".format(gamma, cost_weights))
+		model, env = run_learning(param_dict, rootdir, "{}_{}".format(total_time, cost_weights))
 
-		path = "{}_{}".format(gamma, cost_weights)
+		path = "{}_{}".format(total_time, cost_weights)
 
 		# Execute Evaluation
 		print("Executing Evaluation...")
@@ -113,13 +113,13 @@ for i in range(len(cost_weights_sweep)):
 
 			times, learned, desired, zero = test_env.render()
 
-			ax[2*i, 3*j + k].plot(times, learned, label='learned')
-			ax[2*i, 3*j + k].plot(times, desired, label='desired')
-			ax[2*i, 3*j + k].set_title("{}_{}_{}".format(gamma, cost_weights, size))
-			ax[2*i, 3*j + k].legend()
+			ax[3*i+k, 2*j].plot(learned, label='learned')
+			ax[3*i+k, 2*j].plot(desired, label='desired')
+			ax[3*i+k, 2*j].set_title("{}_{}_{}".format(gamma, cost_weights, size))
+			ax[3*i+k, 2*j].legend()
 
-			ax[2*i + 1, 3*j + k].plot(times, zero)
-			ax[2*i + 1, 3*j + k].set_title("{}_{}_{} zero".format(gamma, cost_weights, size))
+			ax[3*i+k, 2*j+1].plot(zero)
+			ax[3*i+k, 2*j+1].set_title("{}_{}_{} zero".format(gamma, cost_weights, size))
 
 
 f.savefig(os.path.join(rootdir, "sweep.png"))
