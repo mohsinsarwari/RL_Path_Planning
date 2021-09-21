@@ -19,27 +19,30 @@ import matplotlib.pyplot as plt
 class RL_env(gym.Env):
   """
   Environment that mediates between dynamical system and reference generating system
+
+  Parameters:
+  dynamical_sys: system we want to learn the behavior of
+  reference_sys: system that defines the reference path
+  dt: time between steps
+  total_time: total seconds to run simulation
+  cost_weights: relative weights for different elements of cost [path_cost, zero_cost, input_cost]
+  log_path: where to save info to
   """
 
-  def __init__(self, dynamical_sys, reference_sys, total_time, dt, cost_weights, folder):
+  def __init__(self, dynamical_sys, reference_sys, dt, total_time, cost_weights, log_path):
       
     super(RL_env, self).__init__()
 
-    self.folder = folder
+    self.log_path = log_path
 
     self.dynamical_sys = dynamical_sys
-    self.dynamical_sys.set_dt(dt)
-
     self.reference_sys = reference_sys
-    self.reference_sys.set_dt(dt)
 
-    self.curr_time = 0
     self.dt = dt
+    self.curr_time = 0
     self.total_time = total_time
 
     self.done = False
-
-    self.times = np.arange(0, self.total_time, self.dt)
 
     self.cost_weights = cost_weights
 
@@ -49,8 +52,9 @@ class RL_env(gym.Env):
 
     self.total_reward = 0
 
-    self.action_space = spaces.Box(low=np.array([-10]),\
-                                    high=np.array([10]),\
+    self.action_space = spaces.Box(low=-10,\
+                                    high=10,\
+                                    shape=(1,),\
                                     dtype=np.float32)                        
    
     self.observation_space = spaces.Box(low=-10, \
@@ -92,7 +96,7 @@ class RL_env(gym.Env):
 
   def render(self, mode='console'):
 
-    # plt.figure(4)
+    # plt.figure()
     # plt.plot(self.times[:-1], self.learned, label = "learned")
     # plt.plot(self.times[:-1], self.desired, label = "desired")
     # plt.xlabel('time')
@@ -101,11 +105,11 @@ class RL_env(gym.Env):
     # # Set a title of the current axes.
     # plt.title('Learned vs Desired')
     # # show a legend on the plot
-    # plt.legend()
+    # plt.legend() 
     # # Display a figure.
     # plt.savefig(os.path.join(self.folder, "path.png"))
 
-    # plt.figure(5)
+    # plt.figure()
     # plt.plot(self.times[:-1], self.zero)    
     # plt.xlabel('time')
     # # Set the y axis label of the current axis.
@@ -116,7 +120,7 @@ class RL_env(gym.Env):
     # plt.savefig(os.path.join(self.folder, "zero.png"))
 
 
-    # plt.figure(6)
+    # plt.figure()
     # plt.plot(self.times, self.costs, label="total cost")
     # plt.plot(self.times, self.costs_path, label="path cost") 
     # plt.plot(self.times, self.costs_zero, label="zero cost") 
@@ -131,14 +135,11 @@ class RL_env(gym.Env):
     # # Display a figure.
     # plt.savefig(self.folder + "/cost.png")
 
-    return self.times, self.learned, self.desired, self.zero
+    return self.learned, self.desired, self.zero
 
      
   def reset(self):
-    """
-    Important: the observation must be a numpy array
-    :return: (np.array) 
-    """
+
     dstate = self.dynamical_sys.reset()
     rstate = self.reference_sys.reset()
 
@@ -148,11 +149,6 @@ class RL_env(gym.Env):
     self.learned = []
     self.desired = []
     self.zero = []
-    self.costs = []
-    self.costs_path = []
-    self.costs_input = []
-    self.costs_zero = [] 
-
 
     return np.append(dstate, rstate)
     

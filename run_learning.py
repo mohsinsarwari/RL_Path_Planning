@@ -2,7 +2,6 @@
 """
 @Mohsin
 
-
 This is the file that will train the model. 
 
 Configure the model and environment parameters here.
@@ -14,7 +13,6 @@ Configure the model and environment parameters here.
 @params folder_name: new folder in root_path we want to save to
 
 @return model, env
-
 """
 
 import os
@@ -42,21 +40,30 @@ from TrainingRewardCallback import TrainingRewardCallback
 
 def run_learning(param_dict, root_path, folder_name):
 
-    path = os.path.join(root_path, folder_name)
+    # Make log path
+
+    log_path = os.path.join(root_path, folder_name)
 
     try:
-        os.mkdir(path)
+        os.mkdir(log_path)
     except FileExistsError:
         print("Overriding folder ", folder_name)
 
-    # unwrap param_dict
+    # Unwrap param_dict
+    dt = param_dict['dt']
 
-    b = param_dict['b']
+    #Reference env parameters
     internal_matrix = param_dict['internal_matrix']
     path_matrix = param_dict['path_matrix']
+
+    #Dynamic env parameters
+    b = param_dict['b']
+
+    #RL env parameters
     total_time = param_dict['total_time']
-    dt = param_dict['dt']
     cost_weights = param_dict['cost_weights']
+
+    #model parameters
     policy_kwarg = param_dict['policy_kwarg']
     gamma = param_dict['gamma']
     total_timesteps = param_dict['total_timesteps']
@@ -79,12 +86,12 @@ def run_learning(param_dict, root_path, folder_name):
             
 
     #Make Envs
-    dynamical_env = Base_env(b=b)
+    dynamical_env = Base_env(b=b, dt=dt)
 
-    reference_env = Reference_env(internal_matrix, path_matrix)
+    reference_env = Reference_env(internal_matrix=internal_matrix, path_matrix=path_matrix, dt=dt)
 
-    env = RL_env(dynamical_env, reference_env, total_time, dt, cost_weights, path)
-    eval_env = RL_env(dynamical_env, reference_env, total_time, dt, cost_weights, path)
+    env = RL_env(dynamical_env, reference_env, total_time, cost_weights, path)
+    eval_env = RL_env(dynamical_env, reference_env, total_time, cost_weights, path)
             
 
     #create callback function to occasionally evaluate the performance
@@ -112,19 +119,17 @@ def run_learning(param_dict, root_path, folder_name):
                 gamma = gamma,
                 use_sde = True,
                 policy_kwargs=policy_kwarg,
-                verbose = 1,
-                device='cuda',
+                verbose = 0,
+                #device='cuda',
                 )
 
 
     # Execute learning 
     print("Executing Learning...")  
     model.learn(total_timesteps=total_timesteps, callback=callback)
-
     print("Done running learning")
     
     return model, env
-
 
 if __name__=="__main__":
 

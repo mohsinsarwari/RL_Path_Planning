@@ -27,8 +27,6 @@ os.mkdir(rootdir)
 
 print("Starting Sweep")
 
-
-
 #1st sweeping parameter: cost_weights
 cost_weights_sweep = [[20, 10, 0.1], [10, 10, 0.1], [5, 10, 0.1], [1, 10, 0.1], [0.1, 10, 0.1]]
 #cost_weights_sweep = [[10, 10, 0.1], [10, 5, 0.1]]
@@ -98,8 +96,7 @@ for i in range(len(cost_weights_sweep)):
 
 		for k in range(3):
 
-			size = test_sizes[k]  
-
+			size = test_sizes[k] 
 
 			test_dynamical_env = Base_env(b=b, test=True, initial_state=np.array([0, 0, 0, 0]))
 			test_reference_env = Reference_env(internal_matrix, path_matrix, test=True, initial_state=np.array([size, size, 0, 0]))
