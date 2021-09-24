@@ -108,14 +108,14 @@ for i in range(len(cost_weights_sweep)):
 				action, _states = model.predict(obs)
 				obs, rewards, done, info = test_env.step(action)
 
-			times, learned, desired, zero = test_env.render()
+			learned, desired, zero = test_env.render()
 
-			ax[2*i, 3*j + k].plot(times, learned, label='learned')
-			ax[2*i, 3*j + k].plot(times, desired, label='desired')
+			ax[2*i, 3*j + k].plot(learned, label='learned')
+			ax[2*i, 3*j + k].plot(desired, label='desired')
 			ax[2*i, 3*j + k].set_title("{}_{}_{}".format(gamma, cost_weights, size))
 			ax[2*i, 3*j + k].legend()
 
-			ax[2*i + 1, 3*j + k].plot(times, zero)
+			ax[2*i + 1, 3*j + k].plot(zero)
 			ax[2*i + 1, 3*j + k].set_title("{}_{}_{} zero".format(gamma, cost_weights, size))
 
 

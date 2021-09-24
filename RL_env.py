@@ -96,45 +96,6 @@ class RL_env(gym.Env):
 
   def render(self, mode='console'):
 
-    # plt.figure()
-    # plt.plot(self.times[:-1], self.learned, label = "learned")
-    # plt.plot(self.times[:-1], self.desired, label = "desired")
-    # plt.xlabel('time')
-    # # Set the y axis label of the current axis.
-    # plt.ylabel('position')
-    # # Set a title of the current axes.
-    # plt.title('Learned vs Desired')
-    # # show a legend on the plot
-    # plt.legend() 
-    # # Display a figure.
-    # plt.savefig(os.path.join(self.folder, "path.png"))
-
-    # plt.figure()
-    # plt.plot(self.times[:-1], self.zero)    
-    # plt.xlabel('time')
-    # # Set the y axis label of the current axis.
-    # plt.ylabel('y')
-    # # Set a title of the current axes.
-    # plt.title('Zero Dynamics')
-    # # Display a figure.
-    # plt.savefig(os.path.join(self.folder, "zero.png"))
-
-
-    # plt.figure()
-    # plt.plot(self.times, self.costs, label="total cost")
-    # plt.plot(self.times, self.costs_path, label="path cost") 
-    # plt.plot(self.times, self.costs_zero, label="zero cost") 
-    # plt.plot(self.times, self.costs_input, label="input cost")     
-    # plt.xlabel('time')
-    # # Set the y axis label of the current axis.
-    # plt.ylabel('cost')
-    # # Set a title of the current axes.
-    # plt.title('Costs')
-    # # show a legend on the plot
-    # plt.legend()
-    # # Display a figure.
-    # plt.savefig(self.folder + "/cost.png")
-
     return self.learned, self.desired, self.zero
 
      
