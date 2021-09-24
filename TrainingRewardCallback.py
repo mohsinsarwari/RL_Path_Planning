@@ -54,20 +54,25 @@ class TrainingRewardCallback(BaseCallback):
 
         :return: (bool) If the callback returns False, training is aborted early.
         """
-        reward = self.training_env.get_attr("total_reward")[0]
-        curr_time = self.training_env.get_attr("curr_time")[0]
-        total_time = self.training_env.get_attr("total_time")[0]
-        dt = self.training_env.get_attr("dt")[0]
-        if curr_time > total_time - (2*dt):
-            self.rewards.append(self.training_env.get_attr("total_reward")[0])
+        # reward = self.training_env.get_attr("total_reward")[0]
+        # curr_time = self.training_env.get_attr("curr_time")[0]
+        # total_time = self.training_env.get_attr("total_time")[0]
+        # dt = self.training_env.get_attr("dt")[0]
+
+        # if self.done:
+        #     self.rewards.append(self.training_env.get_attr("total_reward")[0])
+
+        # print(self.done)
+        # print(self.rewards)
         
-        return True
+        # return True
+        pass
 
     def _on_rollout_end(self) -> None:
         """
         This event is triggered before updating the policy.
         """
-        pass
+        self.rewards.append(self.training_env.get_attr("total_reward")[0])
 
     def _on_training_end(self) -> None:
         """
@@ -75,5 +80,5 @@ class TrainingRewardCallback(BaseCallback):
         """
         print("Train End")
         folder = self.training_env.get_attr("folder")[0]
-        plt.plot(np.arange(1, len(self.rewards)+1), self.rewards)
+        plt.plot(self.rewards)
         plt.savefig(os.path.join(folder, "test.png"))

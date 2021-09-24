@@ -95,7 +95,6 @@ class RL_env(gym.Env):
     return len(self.learned)
 
   def render(self, mode='console'):
-
     return self.learned, self.desired, self.zero
 
      

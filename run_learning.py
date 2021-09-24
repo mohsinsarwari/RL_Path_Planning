@@ -102,18 +102,13 @@ def run_learning(param_dict, root_path, folder_name):
                              eval_freq=eval_freq,
                              deterministic=False,
                              render=False)
-    
-    #saves a copy of the current agent every save_freq times steps
-    checkpoint_callback = CheckpointCallback(save_freq=save_freq, save_path=path,
-                             name_prefix='rl_model')
 
     trainingreward_callback = TrainingRewardCallback()
     
     #create list of callbacks that will be chain-called by the learning algorithm
-    callback = [eval_callback, checkpoint_callback, trainingreward_callback]
+    callback = [eval_callback, trainingreward_callback]
 
     # Make Model
-
     model = SAC(MlpPolicy,
                 env,
                 gamma = gamma,
@@ -122,7 +117,6 @@ def run_learning(param_dict, root_path, folder_name):
                 verbose = 0,
                 #device='cuda',
                 )
-
 
     # Execute learning 
     print("Executing Learning...")  
