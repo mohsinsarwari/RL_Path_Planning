@@ -2,7 +2,8 @@
 """
 @Mohsin
 
-This is the file that will train the model. 
+
+This is the file that will train the model on the passed in parameters 
 
 Configure the model and environment parameters here.
 
@@ -12,7 +13,8 @@ Configure the model and environment parameters here.
 
 @params folder_name: new folder in root_path we want to save to
 
-@return model, env
+@return best_model (as decided by eval callback), env
+
 """
 
 import os
@@ -35,44 +37,20 @@ from stable_baselines3.common.logger import configure
 
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
-from TrainingRewardCallback import TrainingRewardCallback
 
 
-def run_learning(param_dict, root_path, folder_name):
+def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_name):
 
-    # Make log path
-
-    log_path = os.path.join(root_path, folder_name)
+    path = os.path.join(root_path, folder_name)
 
     try:
-        os.mkdir(log_path)
+        os.mkdir(path)
     except FileExistsError:
         print("Overriding folder ", folder_name)
 
-    # Unwrap param_dict
-    dt = param_dict['dt']
-
-    #Reference env parameters
-    internal_matrix = param_dict['internal_matrix']
-    path_matrix = param_dict['path_matrix']
-
-    #Dynamic env parameters
-    b = param_dict['b']
-
-    #RL env parameters
-    total_time = param_dict['total_time']
-    cost_weights = param_dict['cost_weights']
-
-    #model parameters
-    policy_kwarg = param_dict['policy_kwarg']
-    gamma = param_dict['gamma']
-    total_timesteps = param_dict['total_timesteps']
-    eval_freq = param_dict['eval_freq']
-    save_freq = param_dict['save_freq']
-
     #info needed for storing the dictionary of relevant parameters in .csv file
     fields = param_dict.keys()
-    savename = "param_save.csv" 
+    savename = "param_save.csv"
 
     #save param_dict to a csv for later reference
     save_path = os.path.join(path, savename)
@@ -86,12 +64,11 @@ def run_learning(param_dict, root_path, folder_name):
             
 
     #Make Envs
-    dynamical_env = Base_env(b=b, dt=dt)
+    dynamical_env = Base_env(param_dict)
+    reference_env = Reference_env(param_dict)
 
-    reference_env = Reference_env(internal_matrix=internal_matrix, path_matrix=path_matrix, dt=dt)
-
-    env = RL_env(dynamical_env, reference_env, total_time, cost_weights, path)
-    eval_env = RL_env(dynamical_env, reference_env, total_time, cost_weights, path)
+    env = RL_env(dynamical_env, reference_env, param_dict, path)
+    eval_env = RL_env(dynamical_env, reference_env, param_dict, path)
             
 
     #create callback function to occasionally evaluate the performance
@@ -99,54 +76,62 @@ def run_learning(param_dict, root_path, folder_name):
     eval_callback = EvalCallback(eval_env,
                              best_model_save_path=path,
                              log_path=path,
-                             eval_freq=eval_freq,
+                             eval_freq=param_dict["eval_freq"],
                              deterministic=False,
                              render=False)
-
-    trainingreward_callback = TrainingRewardCallback()
     
     #create list of callbacks that will be chain-called by the learning algorithm
-    callback = [eval_callback, trainingreward_callback]
+    callback = [eval_callback]
 
     # Make Model
+
+    #command to run tensorboard from command prompt
+    #tensorboard --logdir=/home/mohsin/research/RL_new/
     model = SAC(MlpPolicy,
                 env,
-                gamma = gamma,
+                gamma = param_dict["gamma"],
                 use_sde = True,
-                policy_kwargs=policy_kwarg,
-                verbose = 0,
-                #device='cuda',
+                policy_kwargs=param_dict["policy_kwarg"],
+                verbose = 1,
+                device='cuda',
+                tensorboard_log=tensorboard_log
                 )
+
 
     # Execute learning 
     print("Executing Learning...")  
-    model.learn(total_timesteps=total_timesteps, callback=callback)
+    model.learn(total_timesteps=param_dict["total_timesteps"], callback=callback, tb_log_name=tb_log_name)
+
     print("Done running learning")
+
+    best_model = SAC.load(os.path.join(path, "best_model"))
     
-    return model, env
+    return best_model, env
+
 
 if __name__=="__main__":
 
     param_dict = {
+        #shared params
+        'dt': 0.1,
+        'init_low': -5,
+        'init_high': 5,
+        'test': False,
+        #RL_env parameters
+        'total_time': 10,
+        'total_timesteps': 20000,
+        'cost_weights': [10, 10, 1],
+        #base env parameters
         'b' : -2,
+        'action_high': 10,
+        'action_low': -10,
+        #reference env parameters
         'internal_matrix': [[0, -1], [1, 0]],
         'path_matrix': [0, 1],
-        'total_time': 10,
-        'dt': 0.1,
-        'total_timesteps': 200,
+        #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 10,
-        'save_freq': 10,
-        'gamma': 0.9,
-        'cost_weights': [10, 10, 1]
+        'eval_freq': 100,
+        'gamma': 0.98,
     }
 
-    run_learning(param_dict, ".", "Test")
-
-    
-
-
-
-
-
-
+    run_learning(param_dict, ".", "Run_Test", "Run_Test", "test_run")

@@ -27,24 +27,27 @@ class RL_env(gym.Env):
   total_time: total seconds to run simulation
   cost_weights: relative weights for different elements of cost [path_cost, zero_cost, input_cost]
   log_path: where to save info to
+  action_low: lower bound on action
+  action_high: upper_bound on action
   """
 
-  def __init__(self, dynamical_sys, reference_sys, dt, total_time, cost_weights, log_path):
+  def __init__(self, dynamical_sys, reference_sys, param_dict, log_path):
       
     super(RL_env, self).__init__()
+
+    self.param_dict = param_dict
 
     self.log_path = log_path
 
     self.dynamical_sys = dynamical_sys
     self.reference_sys = reference_sys
 
-    self.dt = dt
-    self.curr_time = 0
-    self.total_time = total_time
+    self.curr_step = 0
+    self.num_steps = int(self.param_dict["total_time"] // self.param_dict["dt"])
 
     self.done = False
 
-    self.cost_weights = cost_weights
+    self.cost_weights = param_dict["cost_weights"]
 
     self.learned = []
     self.desired = []
@@ -52,14 +55,14 @@ class RL_env(gym.Env):
 
     self.total_reward = 0
 
-    self.action_space = spaces.Box(low=-10,\
-                                    high=10,\
-                                    shape=(1,),\
+    self.action_space = spaces.Box(low=self.param_dict["action_low"],\
+                                    high=self.param_dict["action_high"],\
+                                    shape=(self.dynamical_sys.get_input_size(),),\
                                     dtype=np.float32)                        
    
-    self.observation_space = spaces.Box(low=-10, \
-                                 high=10,\
-                                 shape=(8,),\
+    self.observation_space = spaces.Box(low=self.param_dict["action_low"],\
+                                    high=self.param_dict["action_high"],\
+                                 shape=(self.dynamical_sys.size() + self.reference_sys.size(),),\
                                  dtype=np.float32)
           
   def step(self, action):
@@ -75,24 +78,21 @@ class RL_env(gym.Env):
     self.desired.append(reference_pos)
     self.zero.append(zero)
 
-    cost_path = self.cost_weights[0]*np.linalg.norm(curr_pos - reference_pos)
-    cost_zero = self.cost_weights[1]*np.linalg.norm(zero)
-    cost_input = self.cost_weights[2]*np.linalg.norm(action)
+    cost_path = self.param_dict["cost_weights"][0]*np.linalg.norm(curr_pos - reference_pos)
+    cost_zero = self.param_dict["cost_weights"][1]*np.linalg.norm(zero)
+    cost_input = self.param_dict["cost_weights"][2]*np.linalg.norm(action)
     total_cost = cost_path + cost_input + cost_zero
 
     self.reward = -total_cost
 
     self.total_reward += self.reward
 
-    self.curr_time = np.round(self.curr_time + self.dt, 3)
+    self.curr_step += 1
 
-    if self.curr_time <= self.total_time:
+    if self.curr_step == self.num_steps:
       self.done = True
 
     return np.append(dstate, rstate), self.reward, self.done, {}
-
-  def get_learned_length(self):
-    return len(self.learned)
 
   def render(self, mode='console'):
     return self.learned, self.desired, self.zero
@@ -103,7 +103,7 @@ class RL_env(gym.Env):
     dstate = self.dynamical_sys.reset()
     rstate = self.reference_sys.reset()
 
-    self.curr_time = 0
+    self.curr_step = 0
     self.done=False
     self.total_reward = 0
     self.learned = []
