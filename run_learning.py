@@ -77,7 +77,7 @@ def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_nam
                              best_model_save_path=path,
                              log_path=path,
                              eval_freq=param_dict["eval_freq"],
-                             deterministic=False,
+                             deterministic=True,
                              render=False)
     
     #create list of callbacks that will be chain-called by the learning algorithm
@@ -106,7 +106,7 @@ def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_nam
 
     best_model = SAC.load(os.path.join(path, "best_model"))
     
-    return best_model, env
+    return model, env
 
 
 if __name__=="__main__":
@@ -119,8 +119,9 @@ if __name__=="__main__":
         'test': False,
         #RL_env parameters
         'total_time': 10,
-        'total_timesteps': 20000,
+        'total_timesteps': 10000,
         'cost_weights': [10, 10, 1],
+        'test_sizes': [0.2, 1, 3],
         #base env parameters
         'b' : -2,
         'action_high': 10,
@@ -130,7 +131,7 @@ if __name__=="__main__":
         'path_matrix': [0, 1],
         #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 100,
+        'eval_freq': 1000,
         'gamma': 0.98,
     }
 

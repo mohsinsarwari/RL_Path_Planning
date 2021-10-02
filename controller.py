@@ -4,7 +4,8 @@ import itertools
 import numpy as np
 import torch as th
 import os
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('TKAgg')
 
 from Base_env import Base_env
 from Reference_env import Reference_env
@@ -20,7 +21,10 @@ from RL_env import RL_env
 
 
 cur_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-rootdir = "Control_Test"
+
+
+# Give Folder Meaningful Name
+rootdir = "Testing_nonmin_long_run"
 
 #create new path in log folder for current experiment
 try:
@@ -38,8 +42,9 @@ param_dict = {
     'test': False,
     #RL_env parameters
     'total_time': 10,
-    'total_timesteps': 200,
-    'cost_weights': [10, 10, 1],
+    'total_timesteps': 5000000,
+    'cost_weights': [10, 50, 1],
+    'test_sizes': [0.2, 1, 3],
     #base env parameters
     'b' : -2,
     'action_high': 10,
@@ -49,26 +54,20 @@ param_dict = {
     'path_matrix': [0, 1],
     #model parameters
     'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-    'eval_freq': 10,
+    'eval_freq': 1000,
     'gamma': 0.98,
 }
 
-
-print("1")
-
-sweep_param_1 = [-2, -1, -0.5, 0.5, 1, 2]
-sweep_param_1_name = "b"
+sweep_param_1 = [0.98]
+sweep_param_1_name = "gamma"
 num_rows = len(sweep_param_1)
-sweep_param_2 = [0.98]
-sweep_param_2_name = "gamma"
+
+sweep_param_2 = [-1, -0.5, 0.5, 1]
+sweep_param_2_name = "b"
 num_columns = len(sweep_param_2)
 
-print("2")
-
-f, ax = plt.subplots(num_rows*2, num_columns*3, sharex=True, sharey=True)
-# f.suptitle("{} vs {}".format(sweep_param_1_name, sweep_param_2_name))
-
-print("3")
+f, ax = matplotlib.pyplot.subplots(num_rows*2, num_columns*3, sharex=False, sharey=False, figsize=(48, 8))
+f.suptitle("{} vs {}".format(sweep_param_1_name, sweep_param_2_name))
 
 for i in range(len(sweep_param_1)):
 	for j in range(len(sweep_param_2)):
@@ -80,20 +79,18 @@ for i in range(len(sweep_param_1)):
 		param_dict[sweep_param_2_name] = param_2
 
 		print("At learning step")
-		best_model, env = run_learning(param_dict, rootdir, "{}_{}".format(param_1, param_2), rootdir, "{}_{}".format(param_1, param_2))
+		best_model, env = run_learning(param_dict, rootdir, "{}".format(param_2), rootdir, "{}".format(param_2))
 
-		path = os.path.join(rootdir, "{}_{}".format(param_1, param_2))
+		path = os.path.join(rootdir, "{}".format(param_2))
 
 		# Execute Evaluation
 		print("Executing Evaluation...")
-
-		test_sizes = [0.2, 1, 3]
 
 		param_dict["test"] = True
 
 		for k in range(3):
 
-			size = test_sizes[k] 
+			size = param_dict["test_sizes"][k] 
 
 			param_dict["initial_state"] = [size, size, 0, 0]
 
@@ -107,15 +104,23 @@ for i in range(len(sweep_param_1)):
 				action, _states = best_model.predict(obs)
 				obs, rewards, done, info = test_env.step(action)
 
+			file = open(os.path.join(path, "results.txt"), "w")
+
 			learned, desired, zero = test_env.render()
 
-			# ax[2*i, 3*j + k].plot(learned, label='learned')
-			# ax[2*i, 3*j + k].plot(desired, label='desired')
-			# ax[2*i, 3*j + k].set_title("{}_{}_{}".format(gamma, cost_weights, size))
-			# ax[2*i, 3*j + k].legend()
+			file.write("learned: " + str(learned) + "\n")
+			file.write("desired: " + str(desired) + "\n")
+			file.write("zero: " + str(zero))
 
-			# ax[2*i + 1, 3*j + k].plot(zero)
-			# ax[2*i + 1, 3*j + k].set_title("{}_{}_{} zero".format(gamma, cost_weights, size))
+			file.close()
+
+			ax[2*i, 3*j + k].plot(learned, label='learned')
+			ax[2*i, 3*j + k].plot(desired, label='desired')
+			ax[2*i, 3*j + k].set_title("{}_{}".format(param_2, size))
+			ax[2*i, 3*j + k].legend()
+
+			ax[2*i + 1, 3*j + k].plot(zero)
+			ax[2*i + 1, 3*j + k].set_title("{}_{} zero".format(param_2, size))
 
 		param_dict["test"] = False
 
