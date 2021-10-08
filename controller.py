@@ -42,7 +42,7 @@ param_dict = {
     'test': False,
     #RL_env parameters
     'total_time': 10,
-    'total_timesteps': 5000000,
+    'total_timesteps': 1500000,
     'cost_weights': [10, 50, 1],
     'test_sizes': [0.2, 1, 3],
     #base env parameters
@@ -62,7 +62,7 @@ sweep_param_1 = [0.98]
 sweep_param_1_name = "gamma"
 num_rows = len(sweep_param_1)
 
-sweep_param_2 = [-1, -0.5, 0.5, 1]
+sweep_param_2 = [0.5, 1]
 sweep_param_2_name = "b"
 num_columns = len(sweep_param_2)
 
@@ -104,7 +104,7 @@ for i in range(len(sweep_param_1)):
 				action, _states = best_model.predict(obs)
 				obs, rewards, done, info = test_env.step(action)
 
-			file = open(os.path.join(path, "results.txt"), "w")
+			file = open(os.path.join(path, "results{}.txt".format(size)), "w")
 
 			learned, desired, zero = test_env.render()
 

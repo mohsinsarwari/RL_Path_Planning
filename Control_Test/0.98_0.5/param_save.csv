@@ -1,0 +1,2 @@
+dt,init_low,init_high,test,total_time,total_timesteps,cost_weights,test_sizes,b,action_high,action_low,internal_matrix,path_matrix,policy_kwarg,eval_freq,gamma,initial_state
+0.1,-5,5,False,10,1000,"[10, 50, 1]","[0.2, 1, 3]",0.5,10,-10,"[[0, -1], [1, 0]]","[0, 1]","{'activation_fn': <class 'torch.nn.modules.activation.Tanh'>, 'use_sde': True}",1000,0.98,"[3, 3, 0, 0]"
