@@ -6,14 +6,12 @@ Things to do:
 
 - Make Plotting Clearer
 - Find source of jittery-ness by adjusting one variable at a time
-- Figure out how to use tensorboard (check actor-critic loss)
 - Evaluate best model vs final model
 - Look into tensorboard hyperparameter sweeping
-- Look into custom tensorboard callbacks
-- Save Evaluation Data to File
 - Add rollout period as parameter
 - Run standard SAC Example to see what desired outputs should look like
 - Keep dt/T the same, change them, and compare (shrinking dt vs Increasing T)
+- Look to see if someone has used stable baselines for trajectory optimization
 
 
 Later:

@@ -8,8 +8,6 @@ import numpy as np
 import gym
 import time
 from gym import spaces
-from scipy import signal
-from scipy import interpolate
 import matplotlib
 import matplotlib.pyplot as plt
 
