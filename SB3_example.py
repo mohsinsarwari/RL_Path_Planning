@@ -1,18 +1,25 @@
 import gym
+import numpy as np
 
-from stable_baselines3 import PPO
+from stable_baselines3.sac import MlpPolicy
+from stable_baselines3 import SAC
 
-env = gym.make("CartPole-v1")
+env = gym.make('Pendulum-v1')
 
-model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="SB3_example")
-model.learn(total_timesteps=1000000, tb_log_name="example_log")
+model = SAC(MlpPolicy, env, verbose=1, tensorboard_log="SB3_SAC_example")
+model.learn(total_timesteps=1000000, log_interval=10, tb_log_name="example_log")
+model.save("sac_pendulum")
+
+del model # remove to demonstrate saving and loading
+
+model = SAC.load("sac_pendulum")
 
 obs = env.reset()
-for i in range(1000):
-    action, _states = model.predict(obs, deterministic=True)
-    obs, reward, done, info = env.step(action)
+while True:
+    action, _states = model.predict(obs)
+    obs, rewards, dones, info = env.step(action)
     env.render()
-    if done:
-      obs = env.reset()
 
 env.close()
+
+

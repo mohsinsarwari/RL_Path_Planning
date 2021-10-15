@@ -25,6 +25,7 @@ from io import StringIO
 from datetime import datetime
 import json
 
+from Basic_env import Basic_env
 from Base_env import Base_env
 from Reference_env import Reference_env
 from RL_env import RL_env
@@ -63,11 +64,14 @@ def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_nam
             
 
     #Make Envs
-    dynamical_env = Base_env(param_dict)
-    reference_env = Reference_env(param_dict)
+    # dynamical_env = Base_env(param_dict)
+    # reference_env = Reference_env(param_dict)
 
-    env = RL_env(dynamical_env, reference_env, param_dict, path)
-    eval_env = RL_env(dynamical_env, reference_env, param_dict, path)
+    # env = RL_env(dynamical_env, reference_env, param_dict, path)
+    # eval_env = RL_env(dynamical_env, reference_env, param_dict, path)
+
+    env = Basic_env(path)
+    eval_env = Basic_env(path)
             
 
     #create callback function to occasionally evaluate the performance
@@ -139,4 +143,4 @@ if __name__=="__main__":
         'gamma': 0.98,
     }
 
-    run_learning(param_dict, ".", "Run_Test_slight_zero", "Run_Test_slight_zero", "test_run")
+    run_learning(param_dict, ".", "Run_Test_Basic", "Run_Test_Basic", "test_run")
