@@ -117,26 +117,26 @@ if __name__=="__main__":
     param_dict = {
         #shared params
         'dt': 0.1,
-        'init_low': -3,
-        'init_high': 3,
+        'init_low': -10,
+        'init_high': 10,
         'test': False,
         #RL_env parameters
         'total_time': 10,
-        'total_timesteps': 300000,
-        'cost_weights': [1, 0, 0],
+        'total_timesteps': 1000000,
+        'cost_weights': [1, 0.2, 0],
         'test_sizes': [0.2, 1, 3],
         #base env parameters
         'b' : -2,
-        'action_high': 3,
-        'action_low': -3,
+        'action_high': 10,
+        'action_low': -10,
         #reference env parameters
         'internal_matrix': [[0, -1], [1, 0]],
         'path_matrix': [0, 1],
         #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 100000,
-        'save_freq': 50000,
+        'eval_freq': 50000,
+        'save_freq': 100000,
         'gamma': 0.98,
     }
 
-    run_learning(param_dict, ".", "Run_Test_track", "Run_Test_track", "test_run")
+    run_learning(param_dict, ".", "Run_Test_slight_zero", "Run_Test_slight_zero", "test_run")
