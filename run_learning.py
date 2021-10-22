@@ -24,6 +24,7 @@ import torch as th
 from io import StringIO
 from datetime import datetime
 import json
+import pickle
 
 from Basic_env import Basic_env
 from Base_env import Base_env
@@ -39,39 +40,28 @@ from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
 
 
-def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_name):
+def run_learning(param_dict):
 
-    path = os.path.join(root_path, folder_name)
+    path = os.path.join("./Runs", param_dict["folder"])
 
     try:
         os.mkdir(path)
     except FileExistsError:
-        print("Overriding folder ", folder_name)
-
-    #info needed for storing the dictionary of relevant parameters in .csv file
-    fields = param_dict.keys()
-    savename = "param_save.csv"
+        print("Overriding folder ", param_dict["folder"])
 
     #save param_dict to a csv for later reference
-    save_path = os.path.join(path, savename)
-    with open(save_path, 'w') as csvfile: 
-        # creating a csv dict writer object 
-        writer = csv.DictWriter(csvfile, fieldnames = fields)    
-        # writing headers (field names) 
-        writer.writeheader()  
-        # writing data rows 
-        writer.writerow(param_dict) 
+    with open(os.path.join(path, "param_dict.pkl"), 'wb') as f:
+        pickle.dump(param_dict, f, pickle.HIGHEST_PROTOCOL)
             
-
     #Make Envs
-    # dynamical_env = Base_env(param_dict)
-    # reference_env = Reference_env(param_dict)
+    dynamical_env = Base_env(param_dict)
+    reference_env = Reference_env(param_dict)
 
-    # env = RL_env(dynamical_env, reference_env, param_dict, path)
-    # eval_env = RL_env(dynamical_env, reference_env, param_dict, path)
+    env = RL_env(dynamical_env, reference_env, param_dict)
+    eval_env = RL_env(dynamical_env, reference_env, param_dict)
 
-    env = Basic_env(path)
-    eval_env = Basic_env(path)
+    #env = Basic_env(param_dict, path)
+    #eval_env = Basic_env(param_dict, path)
             
 
     #create callback function to occasionally evaluate the performance
@@ -101,46 +91,51 @@ def run_learning(param_dict, root_path, folder_name, tensorboard_log, tb_log_nam
                 policy_kwargs=param_dict["policy_kwarg"],
                 verbose = 1,
                 device='cuda',
-                tensorboard_log=tensorboard_log
+                tensorboard_log=path
                 )
 
 
     # Execute learning 
     print("Executing Learning...")  
-    model.learn(total_timesteps=param_dict["total_timesteps"], callback=callback, tb_log_name=tb_log_name)
+    model.learn(total_timesteps=param_dict["total_timesteps"], callback=callback, tb_log_name="tb_log")
 
     print("Done running learning")
 
     best_model = SAC.load(os.path.join(path, "best_model"))
     
-    return model, env
+    return best_model, env
 
 
 if __name__=="__main__":
 
     param_dict = {
+        #path info
+        'folder': "First_test_min_path",
+        'description': "Testing out new setup running nonmin system only weighting path",
         #shared params
         'dt': 0.1,
-        'init_low': -10,
-        'init_high': 10,
+        'init_low': -3,
+        'init_high': 3,
         'test': False,
         #RL_env parameters
         'total_time': 10,
-        'total_timesteps': 1000000,
-        'cost_weights': [1, 0.2, 0],
+        'total_timesteps': 100000,
+        'cost_weights': [1, 0, 0],
         'test_sizes': [0.2, 1, 3],
         #base env parameters
         'b' : -2,
-        'action_high': 10,
-        'action_low': -10,
+        'action_high': 4,
+        'action_low': -4,
+        'initial_state_dynamic': [1, 1],
         #reference env parameters
         'internal_matrix': [[0, -1], [1, 0]],
         'path_matrix': [0, 1],
+        'initial_state_reference': [1, 1],
         #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),
         'eval_freq': 50000,
-        'save_freq': 100000,
+        'save_freq': 10000,
         'gamma': 0.98,
     }
 
-    run_learning(param_dict, ".", "Run_Test_Basic", "Run_Test_Basic", "test_run")
+    run_learning(param_dict)

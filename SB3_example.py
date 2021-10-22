@@ -4,10 +4,10 @@ import numpy as np
 from stable_baselines3.sac import MlpPolicy
 from stable_baselines3 import SAC
 
-env = gym.make('Pendulum-v1')
+env = gym.make('Pendulum-v0')
 
-model = SAC(MlpPolicy, env, verbose=1, tensorboard_log="SB3_SAC_example")
-model.learn(total_timesteps=1000000, log_interval=10, tb_log_name="example_log")
+model = SAC(MlpPolicy, env, verbose=1, tensorboard_log="./Runs/SB3_SAC_example")
+model.learn(total_timesteps=100000, log_interval=10, tb_log_name="tb_log")
 model.save("sac_pendulum")
 
 del model # remove to demonstrate saving and loading

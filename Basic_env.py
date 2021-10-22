@@ -32,36 +32,9 @@ class Basic_env(gym.Env):
   action_high: upper_bound on action
   """
 
-  def __init__(self, log_path):
+  def __init__(self, param_dict, log_path):
       
     super(Basic_env, self).__init__()
-
-
-    param_dict = {
-        #shared params
-        'dt': 0.1,
-        'init_low': -10,
-        'init_high': 10,
-        'test': False,
-        #RL_env parameters
-        'total_time': 10,
-        'total_timesteps': 1000000,
-        'cost_weights': [1, 0.2, 0],
-        'test_sizes': [0.2, 1, 3],
-        #base env parameters
-        'b' : -2,
-        'action_high': 10,
-        'action_low': -10,
-        #reference env parameters
-        'internal_matrix': [[0, -1], [1, 0]],
-        'path_matrix': [0, 1],
-        #model parameters
-        'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 50000,
-        'save_freq': 10000,
-        'gamma': 0.98,
-    }
-
 
     self.param_dict = param_dict
 
@@ -80,7 +53,7 @@ class Basic_env(gym.Env):
     self.desired = []
     self.zero = []
 
-    self.b = -2
+    self.b = param_dict["b"]
 
     self.action_space = spaces.Box(low=self.param_dict["action_low"],\
                                     high=self.param_dict["action_high"],\
@@ -92,7 +65,7 @@ class Basic_env(gym.Env):
                                  shape=(4,),\
                                  dtype=np.float32)
 
-    self.state = np.array([0, 0, 1, 1])
+    self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=4)
           
   def step(self, action):
 
@@ -103,18 +76,25 @@ class Basic_env(gym.Env):
 
     C = np.array([1, 0, 0, 0])
 
-    deriv = np.dot(A, self.state) + (action * C)
+    deriv = (A @ self.state) + (action * C)
 
-    self.state = (self.dt*deriv.T) + self.state
+    self.state = (self.dt*deriv) + self.state
 
     cost_path = self.param_dict["cost_weights"][0]*np.linalg.norm(self.state[0] - self.state[3])
-    #cost_zero = self.param_dict["cost_weights"][1]*np.linalg.norm(self.state[1])
-    #cost_input = self.param_dict["cost_weights"][2]*np.linalg.norm(action)
-    total_cost = cost_path #+ cost_input + cost_zero
+    
+    cost_zero = self.param_dict["cost_weights"][1]*np.linalg.norm(self.state[1])
+    
+    cost_input = self.param_dict["cost_weights"][2]*np.linalg.norm(action)
+    
+    total_cost = cost_path + cost_input + cost_zero
 
     self.reward = -total_cost
 
     self.curr_step += 1
+
+    self.learned.append(self.state[0])
+    self.desired.append(self.state[3])
+    self.zero.append(self.state[1])
 
     if self.curr_step == self.num_steps:
       self.done = True
@@ -127,7 +107,7 @@ class Basic_env(gym.Env):
      
   def reset(self):
 
-    self.state = [0, 0, 1, 1]
+    self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=4)
 
     self.curr_step = 0
     self.done=False

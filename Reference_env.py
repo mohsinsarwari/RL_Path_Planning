@@ -40,22 +40,20 @@ class Reference_env():
     self.dim = len(self.param_dict["internal_matrix"][0])
 
     if self.param_dict["test"]:
-      self.state = self.param_dict["initial_state"][:self.dim]
-      self.derivatives = self.param_dict["initial_state"][self.dim:]     
+      self.state = self.param_dict["initial_state_reference"]
     else:  
       self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
-      self.derivatives = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
 
-  # Size of State
+  # Size of State [s_0, ... s_n]
   def size(self):
-    return 2*self.dim
+    return self.dim
           
   def step(self):
 
     self.derivatives = np.dot(self.param_dict["internal_matrix"], self.state)
     self.state = self.state + (self.param_dict["dt"]*self.derivatives)
 
-    return np.append(self.state, self.derivatives)
+    return self.state
 
   def get_reference_pos(self):
     return np.dot(self.param_dict["path_matrix"], self.state)
@@ -63,13 +61,11 @@ class Reference_env():
   def reset(self):
 
     if self.param_dict["test"]:
-      self.state = self.param_dict["initial_state"][:self.dim]
-      self.derivatives = self.param_dict["initial_state"][self.dim:]     
+      self.state = self.param_dict["initial_state_reference"] 
     else:  
       self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
-      self.derivatives = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
 
-    return np.append(self.state, self.derivatives)
+    return self.state
     
 
       

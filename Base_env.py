@@ -34,24 +34,20 @@ class Base_env():
     self.param_dict = param_dict
 
     if self.param_dict["test"]:
-      self.state = self.param_dict["initial_state"][:2]
-      self.derivatives = self.param_dict["initial_state"][2:]     
+      self.state = self.param_dict["initial_state_dynamic"]     
     else:
       self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
-      self.derivatives = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
 
-  #Size of state [x, y, x_dot, y_dot]
+  #Size of state [x, y]
   def size(self):
-    return 4
+    return 2
 
   def step(self, action):
 
     self.derivatives = np.array([action[0], self.state[0] + (self.param_dict["b"] * self.state[1])])
     self.state = self.state + (self.param_dict["dt"] * self.derivatives)
 
-    return np.append(self.state, self.derivatives)
-
-
+    return self.state
 
   def get_learned_pos(self):
     return self.state[0]
@@ -65,13 +61,11 @@ class Base_env():
   def reset(self):
 
     if self.param_dict["test"]:
-      self.state = self.param_dict["initial_state"][:2]
-      self.derivatives = self.param_dict["initial_state"][2:]  
+      self.state = self.param_dict["initial_state_dynamic"] 
     else:
       self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
-      self.derivatives = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
 
-    return np.append(self.state, self.derivatives)
+    return self.state
 
     
 

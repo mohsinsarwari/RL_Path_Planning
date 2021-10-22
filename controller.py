@@ -19,68 +19,100 @@ from RL_env import RL_env
 #Kill PID: kill PID
 #Or just kill directly: pkill -f sweep.py
 
-
-cur_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-
-
-# Give Folder Meaningful Name
-rootdir = "Testing_nonmin_long_run"
-
-#create new path in log folder for current experiment
-try:
-	os.mkdir(rootdir)
-except FileExistsError:
-	pass
-
-print("Starting Sweep")
+print("Started Sweep")
 
 param_dict = {
+    #path info
+    'folder': "Calibration_test_min_path",
+    'description': "Testing out new setup running min system only weighting path",
     #shared params
     'dt': 0.1,
-    'init_low': -5,
-    'init_high': 5,
+    'init_low': -3,
+    'init_high': 3,
     'test': False,
     #RL_env parameters
     'total_time': 10,
-    'total_timesteps': 1500000,
-    'cost_weights': [10, 50, 1],
-    'test_sizes': [0.2, 1, 3],
+    'total_timesteps': 100000,
+    'cost_weights': [1, 0, 0],
     #base env parameters
     'b' : -2,
-    'action_high': 10,
-    'action_low': -10,
+    'action_high': 4,
+    'action_low': -4,
+    'initial_state_dynamic': [1, 1],
     #reference env parameters
     'internal_matrix': [[0, -1], [1, 0]],
     'path_matrix': [0, 1],
+    'initial_state_reference': [1, 1],
     #model parameters
     'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-    'eval_freq': 1000,
+    'eval_freq': 50000,
+    'save_freq': 10000,
     'gamma': 0.98,
 }
 
-sweep_param_1 = [0.98]
-sweep_param_1_name = "gamma"
-num_rows = len(sweep_param_1)
+run_learning(param_dict)
 
-sweep_param_2 = [0.5, 1]
-sweep_param_2_name = "b"
-num_columns = len(sweep_param_2)
+print("1")
 
-for i in range(len(sweep_param_1)):
-	for j in range(len(sweep_param_2)):
+param_dict["folder"] = "Calibration_test_nonmin_path"
+param_dict["description"] = "Testing out new setup running nonmin system (b=0.5) only weighting path"
+param_dict["cost_weights"] = [1, 0, 0]
+param_dict["b"] = 0.5
 
-		param_1 = sweep_param_1[i]
-		param_2 = sweep_param_2[j]
+run_learning(param_dict)
 
-		param_dict[sweep_param_1_name] = param_1
-		param_dict[sweep_param_2_name] = param_2
+print("2")
 
-		print("At learning step")
-		best_model, env = run_learning(param_dict, rootdir, "{}".format(param_2), rootdir, "{}".format(param_2))
+param_dict["folder"] = "Calibration_test_min_zero"
+param_dict["description"] = "Testing out new setup running min system only weighting zero"
+param_dict["cost_weights"] = [0, 1, 0]
+param_dict["b"] = -2
 
-		path = os.path.join(rootdir, "{}".format(param_2))
+run_learning(param_dict)
 
+print("3")
 
-print("All done!")
+param_dict["folder"] = "Calibration_test_nonmin_zero"
+param_dict["description"] = "Testing out new setup running nonmin system (b=0.5) only weighting zero"
+param_dict["cost_weights"] = [0, 1, 0]
+param_dict["b"] = 0.5
 
+run_learning(param_dict)
 
+print("4")
+
+param_dict["folder"] = "Calibration_test_min_input"
+param_dict["description"] = "Testing out new setup running nonmin system (b=0.5) only weighting input"
+param_dict["cost_weights"] = [0, 0, 1]
+param_dict["b"] = -2
+
+run_learning(param_dict)
+
+print("5")
+
+param_dict["folder"] = "Calibration_test_nonmin_input"
+param_dict["description"] = "Testing out new setup running nonmin system (b=0.5) only weighting input"
+param_dict["cost_weights"] = [0, 0, 1]
+param_dict["b"] = 0.5
+
+run_learning(param_dict)
+
+print("6")
+
+param_dict["folder"] = "Calibration_test_min_blend"
+param_dict["description"] = "Testing out new setup running min system blending weight (1, 0.2, 0)"
+param_dict["cost_weights"] = [1, 0.2, 0]
+param_dict["b"] = -2
+
+run_learning(param_dict)
+
+print("7")
+
+param_dict["folder"] = "Calibration_test_nonmin_blend"
+param_dict["description"] = "Testing out new setup running nonmin system (b=0.5) blending weight (1, 0.2, 0)"
+param_dict["cost_weights"] = [1, 0.2, 0]
+param_dict["b"] = 0.5
+
+run_learning(param_dict)
+
+print("8")
