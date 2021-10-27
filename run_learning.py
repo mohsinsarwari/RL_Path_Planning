@@ -110,8 +110,8 @@ if __name__=="__main__":
 
     param_dict = {
         #path info
-        'folder': "First_test_min_path",
-        'description': "Testing out new setup running nonmin system only weighting path",
+        'folder': "Calibration_test_nonmin_blend_long",
+        'description': "Testing out new setup running long nonmin system blending weight (1, 1, 0)",
         #shared params
         'dt': 0.1,
         'init_low': -3,
@@ -119,11 +119,13 @@ if __name__=="__main__":
         'test': False,
         #RL_env parameters
         'total_time': 10,
-        'total_timesteps': 100000,
-        'cost_weights': [1, 0, 0],
+        'total_timesteps': 1500000,
+        'cost_weights': [1, 1, 0],
         'test_sizes': [0.2, 1, 3],
+        #PVTOL
+        'eps': 0.98,
         #base env parameters
-        'b' : -2,
+        'b' : 0.5,
         'action_high': 4,
         'action_low': -4,
         'initial_state_dynamic': [1, 1],

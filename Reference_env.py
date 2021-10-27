@@ -50,8 +50,8 @@ class Reference_env():
           
   def step(self):
 
-    self.derivatives = np.dot(self.param_dict["internal_matrix"], self.state)
-    self.state = self.state + (self.param_dict["dt"]*self.derivatives)
+    derivatives = np.dot(self.param_dict["internal_matrix"], self.state)
+    self.state = self.state + (self.param_dict["dt"]*derivatives)
 
     return self.state
 
