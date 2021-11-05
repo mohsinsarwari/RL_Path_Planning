@@ -12,9 +12,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
-class Base_env():
+class PVTOL_env():
   """
-  Base environment to confirm setup works
+  PVTOL Env
 
   System:
   x_ddot = -sin(theta)u_1 + eps cos(theta)u_2
@@ -56,6 +56,8 @@ class Base_env():
     x_dot = self.state[3]
     y_dot = self.state[4]
     theta_dot = self.state[5]
+
+    eps = self.param_dict["eps"]
 
     derivatives = np.array([x_dot, y_dot, theta_dot, 
                             (-np.sin(theta)*u1) + (eps*np.cos(theta)*u2),

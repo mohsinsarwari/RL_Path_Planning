@@ -42,7 +42,7 @@ class Reference_env():
     if self.param_dict["test"]:
       self.state = self.param_dict["initial_state_reference"]
     else:  
-      self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
+      self.state = ((self.param_dict["init_high"]-self.param_dict["init_low"])*np.random.rand(self.dim))+self.param_dict["init_low"]
 
   # Size of State [s_0, ... s_n]
   def size(self):
@@ -63,7 +63,7 @@ class Reference_env():
     if self.param_dict["test"]:
       self.state = self.param_dict["initial_state_reference"] 
     else:  
-      self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=self.dim)
+      self.state = ((self.param_dict["init_high"]-self.param_dict["init_low"])*np.random.rand(self.dim))+self.param_dict["init_low"]
 
     return self.state
     

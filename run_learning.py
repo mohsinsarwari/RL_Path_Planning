@@ -28,6 +28,7 @@ import pickle
 
 from Basic_env import Basic_env
 from Base_env import Base_env
+from PVTOL_env import PVTOL_env
 from Reference_env import Reference_env
 from RL_env import RL_env
 
@@ -54,7 +55,7 @@ def run_learning(param_dict):
         pickle.dump(param_dict, f, pickle.HIGHEST_PROTOCOL)
             
     #Make Envs
-    dynamical_env = Base_env(param_dict)
+    dynamical_env = PVTOL_env(param_dict)
     reference_env = Reference_env(param_dict)
 
     env = RL_env(dynamical_env, reference_env, param_dict)
@@ -101,37 +102,33 @@ def run_learning(param_dict):
 
     print("Done running learning")
 
-    best_model = SAC.load(os.path.join(path, "best_model"))
-    
-    return best_model, env
-
 
 if __name__=="__main__":
 
     param_dict = {
         #path info
-        'folder': "Calibration_test_nonmin_blend_long",
-        'description': "Testing out new setup running long nonmin system blending weight (1, 1, 0)",
+        'folder': "PVTOL_1M_Path_only",
+        'description': "Testing out PVTOL Setup 1M timesteps weighting only path",
         #shared params
         'dt': 0.1,
-        'init_low': -3,
-        'init_high': 3,
+        'init_low': -5,
+        'init_high': 5,
         'test': False,
         #RL_env parameters
-        'total_time': 10,
-        'total_timesteps': 1500000,
-        'cost_weights': [1, 1, 0],
+        'total_time': 5,
+        'total_timesteps': 1000000,
+        'cost_weights': [1, 0, 0],
         'test_sizes': [0.2, 1, 3],
         #PVTOL
         'eps': 0.98,
         #base env parameters
         'b' : 0.5,
-        'action_high': 4,
-        'action_low': -4,
+        'action_high': 6,
+        'action_low': -6,
         'initial_state_dynamic': [1, 1],
         #reference env parameters
         'internal_matrix': [[0, -1], [1, 0]],
-        'path_matrix': [0, 1],
+        'path_matrix': [[1, 0], [0, 1]],
         'initial_state_reference': [1, 1],
         #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),

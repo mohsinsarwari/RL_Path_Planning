@@ -36,7 +36,7 @@ class Base_env():
     if self.param_dict["test"]:
       self.state = self.param_dict["initial_state_dynamic"]     
     else:
-      self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
+      self.state = ((self.param_dict["init_high"]-self.param_dict["init_low"])*np.random.rand(2))+self.param_dict["init_low"]
 
   #Size of state [x, y]
   def size(self):
@@ -63,7 +63,7 @@ class Base_env():
     if self.param_dict["test"]:
       self.state = self.param_dict["initial_state_dynamic"] 
     else:
-      self.state = np.random.randint(low=self.param_dict["init_low"], high=self.param_dict["init_high"], size=2)
+      self.state = ((self.param_dict["init_high"]-self.param_dict["init_low"])*np.random.rand(2))+self.param_dict["init_low"]
 
     return self.state
 
