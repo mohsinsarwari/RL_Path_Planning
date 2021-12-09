@@ -26,17 +26,12 @@ from datetime import datetime
 import json
 import pickle
 
-from Basic_env import Basic_env
-from Base_env import Base_env
-from PVTOL_env import PVTOL_env
-from Reference_env import Reference_env
-from RL_env import RL_env
+from envs.classic_control import *
 
 from stable_baselines3 import SAC
 from stable_baselines3.sac import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.logger import configure
-
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
 
@@ -55,15 +50,7 @@ def run_learning(param_dict):
         pickle.dump(param_dict, f, pickle.HIGHEST_PROTOCOL)
             
     #Make Envs
-    dynamical_env = PVTOL_env(param_dict)
-    reference_env = Reference_env(param_dict)
-
-    env = RL_env(dynamical_env, reference_env, param_dict)
-    eval_env = RL_env(dynamical_env, reference_env, param_dict)
-
-    #env = Basic_env(param_dict, path)
-    #eval_env = Basic_env(param_dict, path)
-            
+    env = Quadrotor()
 
     #create callback function to occasionally evaluate the performance
     #of the agent throughout training
