@@ -1,10 +1,4 @@
-from envs.classic_control.cartpole  import CartPoleEnv
-from envs.classic_control.pendulum import PendulumEnv
-from envs.classic_control.acrobot import AcrobotEnv
-from envs.classic_control.continuous_mountain_car import Continuous_MountainCarEnv
-from envs.classic_control.mountain_car import MountainCarEnv
-from envs.classic_control.pvtol import PvtolEnv
-from envs.classic_control.quadrotor import QuadrotorEnv
+from envs.classic_control import *
 
 
 env = PvtolEnv()

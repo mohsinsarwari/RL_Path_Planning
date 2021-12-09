@@ -9,8 +9,8 @@ class QuadrotorEnv(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, i_xx=1, m=1, g=10):
-        self.dt = 0.05
+    def __init__(self, param_dict, i_xx=1, m=1, g=10):
+        self.dt = param_dict["dt"]
         self.i_xx = i_xx
         self.m = m
         self.g = g
@@ -46,7 +46,7 @@ class QuadrotorEnv(gym.Env):
 
         self.state = self.state + (self.dt * derivatives)
 
-        costs = self.state[1] - 2
+        costs = (self.state[1] - 2)**2 + (self.state[0])**2
  
         return self.state, -costs, False, {}
 
