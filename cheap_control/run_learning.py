@@ -50,8 +50,8 @@ def run_learning(param_dict):
         pickle.dump(param_dict, f, pickle.HIGHEST_PROTOCOL)
             
     #Make Envs
-    env = Quadrotor(param_dict)
-    eval_env = Quadrotor(param_dict)
+    env = quadrotor.QuadrotorEnv(param_dict)
+    eval_env = quadrotor.QuadrotorEnv(param_dict)
 
     #create callback function to occasionally evaluate the performance
     #of the agent throughout training
@@ -100,7 +100,7 @@ if __name__=="__main__":
         #shared params
         'dt': 0.05,
         #RL_env parameters
-        'total_time': 5,
+        'total_time': 1,
         'total_timesteps': 50000,
         #model parameters
         'policy_kwarg': dict(activation_fn=th.nn.Tanh),

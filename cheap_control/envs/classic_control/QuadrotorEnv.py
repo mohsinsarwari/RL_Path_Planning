@@ -9,16 +9,19 @@ class QuadrotorEnv(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, param_dict, i_xx=1, m=1, g=10):
+    def __init__(self, param_dict, i_xx=1, m=1, g=1):
         self.dt = param_dict["dt"]
+        self.num_steps = param_dict["total_time"] // self.dt
+        self.curr_step = 0
         self.i_xx = i_xx
         self.m = m
         self.g = g
-        self.max_input = 10
+        self.max_input = 5
         self.min_input = 0
-        self.max_state = 10
-        self.min_state = -10
+        self.max_state = 5
+        self.min_state = -5
         self.viewer = None
+        self.done = False
 
         self.action_space = spaces.Box(low=self.min_input, high=self.max_input, shape=(2,), dtype=np.float32)
         self.observation_space = spaces.Box(low=self.min_state, high=self.max_state,shape=(6,), dtype=np.float32)
@@ -46,12 +49,18 @@ class QuadrotorEnv(gym.Env):
 
         self.state = self.state + (self.dt * derivatives)
 
-        costs = (self.state[1] - 2)**2 + (self.state[0])**2
+        costs = (self.state[1] - 2)**2 + (self.state[0] - 2)**2
+
+        self.curr_step += 1
+        if self.curr_step == self.num_steps:
+            self.done = True
  
-        return self.state, -costs, False, {}
+        return self.state, -costs, self.done, {}
 
     def reset(self):
         self.state = np.zeros(6)
+        self.curr_step = 0
+        self.done = False
         return self.state
 
     def render(self, mode="human"):
@@ -87,7 +96,7 @@ class QuadrotorEnv(gym.Env):
 
         x = self.state
         cartx = x[0] * scalex + screen_width / 2.0  # MIDDLE OF CART
-        carty = x[1] * scaley + screen_width / 2.0
+        carty = x[1] * scaley + screen_height / 2.0
         theta = x[2]
         self.carttrans.set_translation(cartx, carty)
         self.carttrans.set_rotation(theta)

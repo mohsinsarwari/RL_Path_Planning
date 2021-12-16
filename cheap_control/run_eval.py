@@ -1,5 +1,3 @@
-%matplotlib inline
-
 import os
 import gym
 import csv
@@ -19,23 +17,23 @@ import matplotlib.pyplot as plt
 from run_learning import run_learning
 
 
-env = PvtolEnv()
+def evaluate(model, env):
+	for i_episode in range(20):
+		obs = env.reset()
+		while not env.done:
+			action, _states = model.predict(obs)
+			obs, rewards, done, info = env.step(action)
+			env.render()
 
-def evaluate(model, env, param_dict):
-    done = False
-    for i_episode in range(20):
-    	observation = env.reset()
-	    while not done:
-	        action, _states = model.predict(obs)
-	        obs, rewards, done, info = test_env.step(action)
-	        env.render()
+	env.close()
 
-    env.close()
-    
+path = "./Runs/Quadrotor_Test"
+	
 best_model = SAC.load(os.path.join(path, "best_model"))
 
-total_timesteps = param_dict['total_timesteps']
+with open(os.path.join(path, "param_dict.pkl"), 'rb') as f:
+   param_dict = pickle.load(f)
 
-latest_model = SAC.load(os.path.join(path, "rl_model_{}_steps".format(total_timesteps)))
+env = quadrotor.QuadrotorEnv(param_dict)
 
-param_dict
+evaluate(best_model, env)
