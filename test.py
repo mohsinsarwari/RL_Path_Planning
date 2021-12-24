@@ -1,7 +1,8 @@
 from envs.classic_control import *
+from envs.mujoco.walker2d import Walker2dEnv
 
 
-env = PvtolEnv()
+env = Walker2dEnv()
 for i_episode in range(20):
     observation = env.reset()
     for t in range(100):

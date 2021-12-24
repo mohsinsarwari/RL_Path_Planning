@@ -5,15 +5,7 @@
 
 This is the file that will train the model on the passed in parameters 
 
-Configure the model and environment parameters here.
-
-@params param_dict: dictionary of parameters
-
-@params root_path: folder where this training should be saved
-
-@params folder_name: new folder in root_path we want to save to
-
-@return best_model (as decided by eval callback), env
+Configure the model and environment parameters in params.py and then use this to run
 
 """
 import os
@@ -24,9 +16,9 @@ import torch as th
 from io import StringIO
 from datetime import datetime
 import json
-import pickle
+import dill as pickle # so that we can pickle lambda functions
 
-from envs.classic_control import *
+from params import *
 
 from stable_baselines3 import SAC
 from stable_baselines3.sac import MlpPolicy
@@ -35,78 +27,82 @@ from stable_baselines3.common.logger import configure
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.callbacks import CheckpointCallback
 
+BASE_PATH = "./Runs"
 
-def run_learning(param_dict):
+def run_learning(params, env_params, path):
 
-    path = os.path.join("./Runs", param_dict["folder"])
+    models_path = os.path.join(path, "models")
+    os.mkdir(models_path)
 
-    try:
-        os.mkdir(path)
-    except FileExistsError:
-        print("Overriding folder ", param_dict["folder"])
+    tb_log_path = os.path.join(path, "tb_log_path")
+    os.mkdir(tb_log_path)
 
-    #save param_dict to a csv for later reference
-    with open(os.path.join(path, "param_dict.pkl"), 'wb') as f:
-        pickle.dump(param_dict, f, pickle.HIGHEST_PROTOCOL)
-            
-    #Make Envs
-    env = quadrotor.QuadrotorEnv(param_dict)
-    eval_env = quadrotor.QuadrotorEnv(param_dict)
+    for eps in params.eps:
+        print("------------------------------")
+        print("ON EPSILON ", eps)
+        params.ep = eps
 
-    #create callback function to occasionally evaluate the performance
-    #of the agent throughout training
-    eval_callback = EvalCallback(eval_env,
-                             best_model_save_path=path,
-                             log_path=path,
-                             eval_freq=param_dict["eval_freq"],
-                             deterministic=True,
-                             render=False)
+        model_path = os.path.join(models_path, "eps_{}".format(eps))
+        os.mkdir(model_path)
 
-    save_callback = CheckpointCallback(save_freq=param_dict["save_freq"], 
-                                        save_path=path,
-                                        name_prefix='rl_model')
-    
-    #create list of callbacks that will be chain-called by the learning algorithm
-    callback = [eval_callback, save_callback]
+        env = env_params.env
+        env.set_params(env_params)
+        env.reset()
+        eval_env = env_params.eval_env
+        eval_env.set_params(env_params)
+        eval_env.reset()
 
-    # Make Model
+        #create callback function to occasionally evaluate the performance
+        #of the agent throughout training
+        eval_callback = EvalCallback(eval_env,
+                                 best_model_save_path=model_path,
+                                 eval_freq=params.eval_freq,
+                                 deterministic=True,
+                                 render=False)
 
-    #command to run tensorboard from command prompt
-    #tensorboard --logdir=/home/mohsin/research/RL_new/
-    model = SAC(MlpPolicy,
-                env,
-                gamma = param_dict["gamma"],
-                use_sde = True,
-                policy_kwargs=param_dict["policy_kwarg"],
-                verbose = 1,
-                device='cuda',
-                tensorboard_log=path
-                )
+        save_callback = CheckpointCallback(save_freq=params.save_freq, 
+                                            save_path=model_path,
+                                            name_prefix='rl_model')
+
+        #create list of callbacks that will be chain-called by the learning algorithm
+        callback = [eval_callback, save_callback]
+
+        # Make Model
+        #command to run tensorboard from command prompt
+        #tensorboard --logdir=/home/mohsin/research/RL_new/
+        model = SAC(MlpPolicy,
+                    env,
+                    gamma = params.gamma,
+                    use_sde = True,
+                    policy_kwargs=params.policy_kwargs,
+                    verbose = 1,
+                    device='cuda',
+                    tensorboard_log = tb_log_path
+                    )
+
+        # Execute learning 
+        print("Executing Learning...")  
+        model.learn(total_timesteps=params.total_timesteps, callback=callback, tb_log_name="eps_{}".format(eps))
+        print("Done running learning")
 
 
-    # Execute learning 
-    print("Executing Learning...")  
-    model.learn(total_timesteps=param_dict["total_timesteps"], callback=callback, tb_log_name="tb_log")
+root_path = os.path.join(BASE_PATH, params.run_name)
 
-    print("Done running learning")
+try:
+    os.mkdir(root_path)
+except FileExistsError:
+    print("Overriding folder ", params.run_name)
 
+for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
+    if env_params.run:
+        print("Running on ", env_name)
+        path = os.path.join(root_path, env_name)
+        try:
+            os.mkdir(path)
+        except FileExistsError:
+            print("Overriding folder ", params.run_name)
 
-if __name__=="__main__":
+        with open(os.path.join(path, "params.pkl"), 'wb') as f:
+            pickle.dump(params, f, pickle.HIGHEST_PROTOCOL)
 
-    param_dict = {
-        #path info
-        'folder': "Quadrotor_Test",
-        'description': "Testing out Quadrotor Simulation",
-        #shared params
-        'dt': 0.05,
-        #RL_env parameters
-        'total_time': 1,
-        'total_timesteps': 50000,
-        #model parameters
-        'policy_kwarg': dict(activation_fn=th.nn.Tanh),
-        'eval_freq': 5000,
-        'save_freq': 10000,
-        'gamma': 0.98,
-    }
-
-    run_learning(param_dict)
+        run_learning(params, env_params, path)
