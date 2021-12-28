@@ -22,7 +22,7 @@ for i_episode in range(10):
     while not done:
         i += 1
         action = env.action_space.sample()
-        env.render()
+        #env.render()
         obs, reward, done, info = env.step(action)
         if done:
             print(i)

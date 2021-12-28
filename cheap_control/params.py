@@ -12,18 +12,19 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 params = DotMap()
 
-dt = 0.01
+dts = [0.005, 0.01, 0.05, 0.1]
+dt = 0.002
 total_time = 10
 
 #General Params
-params.eval_freq = 2500
-params.save_freq = 5000
-params.total_timesteps = 50000
+params.eval_freq = 25000
+params.save_freq = 50000
+params.episodes = 50000
 params.gamma = 0.98
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = [0, 0.5, 1, 5]
+params.eps = [0, 0.1, 0.5, 1]
 params.ep = 0
-params.run_name = "EpsilonSweepPendulumTest"
+params.run_name = "EpsilonSweepPendulum"
 
 #Env Specific Params
 
@@ -34,8 +35,8 @@ params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 0.5 #half length of pendulum (to center of mass)
 params.envs.pendulum.g = 1 #gravity
 params.envs.pendulum.lam = 0.03 #damping coefficient
-params.envs.pendulum.max_input = 4
-params.envs.pendulum.min_input = -4
+params.envs.pendulum.max_input = 5
+params.envs.pendulum.min_input = -5
 params.envs.pendulum.max_state = 10
 params.envs.pendulum.min_state = -10
 params.envs.pendulum.init_low = [-1, -0.5]
