@@ -31,7 +31,6 @@ class Pendulum(gym.Env):
         All observations are assigned a uniform random value in [-1..1]
 
     Episode Termination:
-        ????
         Time based
     """
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
@@ -56,20 +55,29 @@ class Pendulum(gym.Env):
 
         theta = self.state[0]
         theta_dot = self.state[1] 
+        u = u[0]
 
         derivatives = np.array([theta_dot, 
-                                ((self.params.g / (2 * self.params.l)) * np.sin(theta)) - (self.params.lam * theta_dot / self.params.m) + (u[0] / (self.params.m * (2*self.params.l) ** 2))])
+                                ((self.params.g / self.params.l) * np.sin(theta)) - (self.params.lam * theta_dot / self.params.m) + (u / (self.params.m * self.params.l ** 2))])
 
 
         self.state = [theta, theta_dot] + (self.params.dt * derivatives)
 
-        costs = self.params.cost_fn(self.state_to_dict(self.state, u))
+        costs = self.get_cost(u)
 
         self.curr_step += 1
         self.done = bool(
             self.curr_step == self.num_steps)
 
         return self.state, -costs, self.done, {}
+
+    def get_cost(self, u):
+
+        theta = self.state[0]
+        theta_dot = self.state[1]
+
+        return (theta**2) + (self.params.ep*(u**2))
+
 
     def reset(self):
         self.state = np.random.uniform(self.params.init_low, self.params.init_high, (2,))
@@ -108,11 +116,3 @@ class Pendulum(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
-
-    #so that it is easier to write the cost function as a lambda in params.py
-    def state_to_dict(self, state, u):
-        vals = dict()
-        vals["u"] = u[0]
-        vals["theta"] = state[0]
-        vals["theta_dot"] = state[1]
-        return vals

@@ -16,14 +16,23 @@ from stable_baselines3 import SAC
 import matplotlib
 import matplotlib.pyplot as plt
 
+actions = []
+states = []
+
 def evaluate(model, env):
-	for i_episode in range(20):
+	for i_episode in range(100):
+		actions_curr = []
+		states_curr = []
 		obs = env.reset()
 		done = False
 		while not done:
 			action, _states = model.predict(obs)
+			actions_curr.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			env.render()
+			states_curr.append(obs[0])
+			#env.render()
+		actions.append(actions_curr)
+		states.append(states_curr)
 
 	env.close()
 
@@ -38,3 +47,8 @@ env = Pendulum.Pendulum()
 env.set_params(params.envs.pendulum)
 
 evaluate(best_model, env)
+
+plt.plot(np.array(actions).T)
+plt.axhline(4, color = 'r', linestyle = 'dashed')
+plt.axhline(-4, color = 'r', linestyle = 'dashed')
+plt.show()
