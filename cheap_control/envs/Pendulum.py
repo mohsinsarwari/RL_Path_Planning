@@ -11,7 +11,7 @@ class Pendulum(gym.Env):
         Pendulum model with 1 inputs: torque about its center.
 
     Source:
-        ???
+        Gym
 
     Observation:
         Type: Box(6)
@@ -38,12 +38,12 @@ class Pendulum(gym.Env):
     def __init__(self):
         pass
 
-    def set_params(self, params):
-        self.params = params
-        self.action_space = spaces.Box(low=params.min_input, high=params.max_input, shape=(1,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=params.min_state, high=params.max_state,shape=(2,), dtype=np.float32)
-        self.num_steps = self.params.total_time // self.params.dt
-        params.seed = self.seed()
+    def set_params(self, env_params):
+        self.env_params = env_params
+        self.action_space = spaces.Box(low=env_params.min_input, high=env_params.max_input, shape=(1,), dtype=np.float32)
+        self.observation_space = spaces.Box(low=env_params.min_state, high=env_params.max_state,shape=(2,), dtype=np.float32)
+        self.num_steps = self.env_params.total_time // self.env_params.dt
+        env_params.seed = self.seed()
         self.viewer = None
         self.done = False
 
@@ -51,17 +51,17 @@ class Pendulum(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, u):
+    def step(self, action):
 
         theta = self.state[0]
         theta_dot = self.state[1] 
-        u = u[0]
+        u = action[0]
 
         derivatives = np.array([theta_dot, 
-                                ((self.params.g / self.params.l) * np.sin(theta)) - (self.params.lam * theta_dot / self.params.m) + (u / (self.params.m * self.params.l ** 2))])
+                                ((self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) - (self.env_params.lam * theta_dot / self.env_params.m) + (u / (self.env_params.m * ((self.env_params.l / 2) ** 2)))])
 
 
-        self.state = [theta, theta_dot] + (self.params.dt * derivatives)
+        self.state = [theta, theta_dot] + (self.env_params.dt * derivatives)
 
         costs = self.get_cost(u)
 
@@ -76,11 +76,10 @@ class Pendulum(gym.Env):
         theta = self.state[0]
         theta_dot = self.state[1]
 
-        return (theta**2) + (self.params.ep*(u**2))
-
+        return (theta**2) + (self.env_params.ep*(u**2))
 
     def reset(self):
-        self.state = np.random.uniform(self.params.init_low, self.params.init_high, (2,))
+        self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (2,))
         self.curr_step = 0
         self.done = False
         return self.state
@@ -91,8 +90,9 @@ class Pendulum(gym.Env):
 
             self.viewer = rendering.Viewer(500, 500)
             self.viewer.set_bounds(-2.2, 2.2, -2.2, 2.2)
-            length = self.params.l*2
-            width = self.params.l / 5
+
+            length = self.env_params.l * 2
+            width = self.env_params.l / 10
 
             l, r, t, b = -width / 2, width / 2, 0, length
             box = rendering.make_polygon([(l, b), (l, t), (r, t), (r, b)])

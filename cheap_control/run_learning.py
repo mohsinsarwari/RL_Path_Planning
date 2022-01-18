@@ -35,17 +35,22 @@ def run_learning(params, env_params, path):
 
     tb_log_path = os.path.join(path, "tb_log_path")
     os.mkdir(tb_log_path)
-    for eps in params.eps:
-        print("------------------------------")
-        print("ON EPSILON {}".format(eps))
-        env_params.ep = eps
 
-        model_path = os.path.join(models_path, "eps_{}".format(eps))
+    for eps in params.eps:
+
+        env_params.ep = eps
+        subfolder = "eps_{}".format(eps)
+
+        print("-----------------------------------------")
+        print("ON " + subfolder)
+
+        model_path = os.path.join(models_path, subfolder)
         os.mkdir(model_path)
 
         env = env_params.env
         env.set_params(env_params)
         env.reset()
+
         eval_env = env_params.eval_env
         eval_env.set_params(env_params)
         eval_env.reset()
@@ -77,13 +82,13 @@ def run_learning(params, env_params, path):
                     tensorboard_log = tb_log_path
                     )
 
-        total_timesteps = params.episodes * (env_params.total_time / env_params.dt)
         # Execute learning 
         print("Executing Learning...")  
-        model.learn(total_timesteps=total_timesteps, callback=callback, tb_log_name="eps_{}".format(eps))
+        model.learn(total_timesteps=params.timesteps, callback=callback, tb_log_name=subfolder)
         print("Done running learning")
 
-for trial in range(1):
+for trial in range(params.num_trials):
+
     root_path = os.path.join(BASE_PATH, params.run_name + "_Trial" + str(trial))
 
     try:

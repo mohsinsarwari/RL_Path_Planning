@@ -17,13 +17,14 @@ dt = 0.01
 total_time = 10
 
 #General Params
-params.eval_freq = 2500 #steps
-params.save_freq = 2500 #steps
-params.episodes = 50 #episodes multiply by total_time/dt to get num steps
+params.eval_freq = 25000
+params.save_freq = 25000 
+params.timesteps = 50000 
 params.gamma = 0.98
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = [0, 0.05, 0.1, 0.5, 0.7, 1]
-params.run_name = "EpsilonSweepPendulumTest2"
+params.eps = [0, 0.5, 1]
+params.num_trials = 1
+params.run_name = "RetestPendulum"
 
 #Env Specific Params
 
@@ -31,12 +32,12 @@ params.envs.pendulum.env = Pendulum.Pendulum() #base env for simulation
 params.envs.pendulum.eval_env = Pendulum.Pendulum() #extra env for eval callback
 params.envs.pendulum.run = True #if you want run_learning to train on this env
 params.envs.pendulum.m = 1 #mass of pendulum
-params.envs.pendulum.l = 1 #length of pendulum
+params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.pendulum.g = 1 #gravity
-params.envs.pendulum.lam = 0.05 #damping coefficient
+params.envs.pendulum.lam = 0.005 #damping coefficient
 params.envs.pendulum.ep = 0.01
-params.envs.pendulum.max_input = 4
-params.envs.pendulum.min_input = -4
+params.envs.pendulum.max_input = 5
+params.envs.pendulum.min_input = -5
 params.envs.pendulum.max_state = 10
 params.envs.pendulum.min_state = -10
 params.envs.pendulum.init_low = [-0.75, -0.25]
