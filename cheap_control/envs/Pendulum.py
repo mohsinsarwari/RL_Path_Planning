@@ -65,8 +65,12 @@ class Pendulum(gym.Env):
         costs = self.get_cost(u)
 
         self.curr_step += 1
+
+        theta_normalized = self.angle_normalize(theta)
+
         self.done = bool(
-            self.curr_step == self.num_steps)
+            self.curr_step == self.num_steps
+            or theta_normalized > (np.pi / 2))
 
         return self.state, -costs, self.done, {}
 
