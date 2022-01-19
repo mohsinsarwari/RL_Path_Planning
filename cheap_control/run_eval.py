@@ -22,8 +22,8 @@ def evaluate(model, env):
 
 	actions = []
 	states = []
-	
-	for i_episode in range(100):
+
+	for i_episode in range(1):
 		actions_curr = []
 		states_curr = []
 		obs = env.reset()
@@ -39,9 +39,11 @@ def evaluate(model, env):
 
 	env.close()
 
-path = "./Runs/EpsilonSweepPendulumTest/pendulum/"
+	return actions, states
+
+path = "./Runs/AngleWrappingRetestPendulum_Trial0/pendulum/"
 	
-best_model = SAC.load(os.path.join(path, "models/eps_0.5/best_model"))
+best_model = SAC.load(os.path.join(path, "models/eps_0/best_model"))
 
 with open(os.path.join(path, "params.pkl"), 'rb') as f:
    params = pickle.load(f)
@@ -49,9 +51,12 @@ with open(os.path.join(path, "params.pkl"), 'rb') as f:
 env = Pendulum.Pendulum()
 env.set_params(params.envs.pendulum)
 
-evaluate(best_model, env)
+actions, states = evaluate(best_model, env)
 
-plt.plot(np.array(actions).T)
-plt.axhline(4, color = 'r', linestyle = 'dashed')
-plt.axhline(-4, color = 'r', linestyle = 'dashed')
+#plt.plot(np.array(actions).T)
+#plt.axhline(5, color = 'r', linestyle = 'dashed')
+#plt.axhline(-5, color = 'r', linestyle = 'dashed')
+#plt.title("Input over time")
+plt.plot(np.array(states).T)
+plt.title("State over time")
 plt.show()

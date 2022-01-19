@@ -60,11 +60,9 @@ class Pendulum(gym.Env):
         derivatives = np.array([theta_dot, 
                                 ((self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) - (self.env_params.lam * theta_dot / self.env_params.m) + (u / (self.env_params.m * ((self.env_params.l / 2) ** 2)))])
 
-
         self.state = [theta, theta_dot] + (self.env_params.dt * derivatives)
 
         costs = self.get_cost(u)
-        print("theta: ", self.angle_normalize(theta))
 
         self.curr_step += 1
         self.done = bool(
