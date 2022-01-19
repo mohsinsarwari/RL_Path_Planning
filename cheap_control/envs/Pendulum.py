@@ -64,6 +64,7 @@ class Pendulum(gym.Env):
         self.state = [theta, theta_dot] + (self.env_params.dt * derivatives)
 
         costs = self.get_cost(u)
+        print("theta: ", self.angle_normalize(theta))
 
         self.curr_step += 1
         self.done = bool(
@@ -73,7 +74,7 @@ class Pendulum(gym.Env):
 
     def get_cost(self, u):
 
-        theta = self.state[0]
+        theta = self.angle_normalize(self.state[0])
         theta_dot = self.state[1]
 
         return (theta**2) + (self.env_params.ep*(u**2))
@@ -94,7 +95,7 @@ class Pendulum(gym.Env):
             length = self.env_params.l * 2
             width = self.env_params.l / 10
 
-            l, r, t, b = -width / 2, width / 2, 0, length
+            l, r, t, b = -width / 2, width / 2, length, 0
             box = rendering.make_polygon([(l, b), (l, t), (r, t), (r, b)])
             circ0 = rendering.make_circle(width / 2)
             circ1 = rendering.make_circle(width / 2)
@@ -116,3 +117,6 @@ class Pendulum(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
+
+    def angle_normalize(self, x):
+        return abs(((x + np.pi) % (2 * np.pi)) - np.pi)

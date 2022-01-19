@@ -14,7 +14,7 @@ params = DotMap()
 
 #dts = [0.005, 0.01, 0.05, 0.1]
 dt = 0.01
-total_time = 10
+total_time = 5
 
 #General Params
 params.eval_freq = 25000
@@ -22,9 +22,9 @@ params.save_freq = 25000
 params.timesteps = 50000 
 params.gamma = 0.98
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = [0, 0.5, 1]
+params.eps = [0] #[0, 0.1, 0.5, 0.7, 1]
 params.num_trials = 1
-params.run_name = "RetestPendulum"
+params.run_name = "AngleWrappingRetestPendulum"
 
 #Env Specific Params
 

@@ -16,10 +16,13 @@ from stable_baselines3 import SAC
 import matplotlib
 import matplotlib.pyplot as plt
 
-actions = []
-states = []
+
 
 def evaluate(model, env):
+
+	actions = []
+	states = []
+	
 	for i_episode in range(100):
 		actions_curr = []
 		states_curr = []
