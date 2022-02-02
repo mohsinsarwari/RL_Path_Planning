@@ -16,47 +16,55 @@ from stable_baselines3 import SAC
 import matplotlib
 import matplotlib.pyplot as plt
 
+BASE_PATH = "./Runs"
 
+def evaluate(path, model="best_model"):
 
-def evaluate(model, env):
+	results = dict()
 
-	actions = []
-	states = []
+    path = os.mkdir(os.path.join(BASE_PATH, folder_name))
 
-	for i_episode in range(1):
-		actions_curr = []
-		states_curr = []
+    models_path = os.path.join(path, "models")
+
+	model = SAC.load(os.path.join(models_path, model))
+
+	with open(os.path.join(path, "params.pkl"), 'rb') as f:
+   		params = pickle.load(f)
+
+    for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
+
+    	env_results = dict()
+
+    	env_path = os.path.join(path, env_name)
+
+        if not env_params.run:
+            continue
+
+        env = env_params.eval_env
+        env.set_params(env_params)
+        env.reset()
+
+        evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
+
+        env_results["mean_reward"] = [evaluations["timesteps"], evaluations["results"]]
+
+        actions = []
+        states = []
+
 		obs = env.reset()
 		done = False
 		while not done:
 			action, _states = model.predict(obs)
-			actions_curr.append(action[0])
+			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			states_curr.append(obs[0])
-			#env.render()
-		actions.append(actions_curr)
-		states.append(states_curr)
+			states.append(obs[0])
 
-	env.close()
+		env_results["actions"] = actions
+		env_results["states"] = states
 
-	return actions, states
+		results[env_name] = env_results
 
-path = "./Runs/AngleWrappingRetestPendulum_Trial0/pendulum/"
-	
-best_model = SAC.load(os.path.join(path, "models/eps_0/best_model"))
+		env.close()
 
-with open(os.path.join(path, "params.pkl"), 'rb') as f:
-   params = pickle.load(f)
+	return results
 
-env = Pendulum.Pendulum()
-env.set_params(params.envs.pendulum)
-
-actions, states = evaluate(best_model, env)
-
-#plt.plot(np.array(actions).T)
-#plt.axhline(5, color = 'r', linestyle = 'dashed')
-#plt.axhline(-5, color = 'r', linestyle = 'dashed')
-#plt.title("Input over time")
-plt.plot(np.array(states).T)
-plt.title("State over time")
-plt.show()

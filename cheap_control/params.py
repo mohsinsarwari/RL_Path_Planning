@@ -2,6 +2,7 @@ from dotmap import DotMap
 from envs import *
 import torch as th
 import numpy as np
+import datetime
 
 from stable_baselines3 import SAC
 from stable_baselines3.sac import MlpPolicy
@@ -12,19 +13,21 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 params = DotMap()
 
-#dts = [0.005, 0.01, 0.05, 0.1]
-dt = 0.01
-total_time = 5
+
 
 #General Params
-params.eval_freq = 2500
-params.save_freq = 50000
-params.timesteps = 500000
+params.runner = "Mohsin" #just your first name
+params.device = "Hybrid Robotics Server"
+params.eval_freq = 2000
+params.save_freq = 20000
+params.timesteps = 200000
 params.gamma = 0.98
+params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = [0, 0.1, 0.5, 0.7, 1]
-params.num_trials = 1
-params.run_name = "FullAngleWrappingTestPendulum"
+params.eps = 0.1
+params.dt = 0.01
+params.total_time = 5
+params.trials = 3
 
 #Env Specific Params
 
@@ -35,69 +38,59 @@ params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.pendulum.g = 1 #gravity
 params.envs.pendulum.lam = 0.005 #damping coefficient
-params.envs.pendulum.ep = 0.01
+params.envs.pendulum.eps = params.eps
 params.envs.pendulum.max_input = 10
 params.envs.pendulum.min_input = -10
-params.envs.pendulum.max_state = 10
-params.envs.pendulum.min_state = -10
-params.envs.pendulum.init_low = [-1, -0.5]
-params.envs.pendulum.init_high = [1, 0.5]
-params.envs.pendulum.dt = dt
-params.envs.pendulum.total_time = total_time
+params.envs.pendulum.init_low = [-2*np.pi, -0.1]
+params.envs.pendulum.init_high = [2*np.pi, 0.1]
+params.envs.pendulum.dt = params.dt
+params.envs.pendulum.total_time = params.total_time
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor()
 params.envs.quadrotor.run = False
-params.envs.quadrotor.dt = dt
-params.envs.quadrotor.total_time = total_time
+params.envs.quadrotor.dt = params.dt
+params.envs.quadrotor.total_time = params.total_time
 params.envs.quadrotor.i_xx = 1
 params.envs.quadrotor.m = 1
 params.envs.quadrotor.g = 1
 params.envs.quadrotor.max_input = np.array([10, 3])
 params.envs.quadrotor.min_input = np.array([5, -3])
-params.envs.quadrotor.max_state = 30
-params.envs.quadrotor.min_state = -30
 params.envs.quadrotor.init_low = -1
 params.envs.quadrotor.init_high = 1
 
 params.envs.pvtol.env = Pvtol.Pvtol()
 params.envs.pvtol.eval_env = Pvtol.Pvtol()
 params.envs.pvtol.run = False
-params.envs.pvtol.dt = dt
-params.envs.pvtol.total_time = total_time
+params.envs.pvtol.dt = params.dt
+params.envs.pvtol.total_time = params.total_time
 params.envs.pvtol.eps = 0.01
 params.envs.pvtol.m = 1
 params.envs.pvtol.g = 2
 params.envs.pvtol.max_input = np.array([4, 1])
 params.envs.pvtol.min_input = np.array([1, -1])
-params.envs.pvtol.max_state = 30
-params.envs.pvtol.min_state = -30
 params.envs.pvtol.init_low = -1
 params.envs.pvtol.init_high = 1
-params.envs.pvtol.cost_fn = lambda vals:  vals["theta"]**2 + (params.eps * (vals["u1"]**2 + vals["u2"]**2))
 
 params.envs.manipulator.env = Manipulator.Manipulator()
 params.envs.manipulator.eval_env = Manipulator.Manipulator()
 params.envs.manipulator.run = False
-params.envs.manipulator.dt = dt
-params.envs.manipulator.total_time = total_time
+params.envs.manipulator.dt = params.dt
+params.envs.manipulator.total_time = params.total_time
 params.envs.manipulator.eps = 0.01
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 1
 params.envs.manipulator.k3 = 1
 params.envs.manipulator.max_input = 4
 params.envs.manipulator.min_input = -4
-params.envs.manipulator.max_state = 5
-params.envs.manipulator.min_state = -5
 params.envs.manipulator.init_low = -1
 params.envs.manipulator.init_high = 1
-params.envs.manipulator.cost_fn = lambda vals:  vals["theta"]**2 + (params.eps * (vals["u"]**2))
 
 params.envs.cartpole.env = Cartpole.Cartpole()
 params.envs.cartpole.eval_env = Cartpole.Cartpole()
 params.envs.cartpole.run = False
-params.envs.cartpole.dt = dt
-params.envs.cartpole.total_time = total_time
+params.envs.cartpole.dt = params.dt
+params.envs.cartpole.total_time = params.total_time
 params.envs.cartpole.eps = 0.01
 params.envs.cartpole.g = 1
 params.envs.cartpole.mp = 0.5
@@ -107,8 +100,5 @@ params.envs.cartpole.f = 5 # force
 params.envs.cartpole.lam = 0.01
 params.envs.cartpole.max_input = 2
 params.envs.cartpole.min_input = -2
-params.envs.cartpole.max_state = 5
-params.envs.cartpole.min_state = -5
 params.envs.cartpole.init_low = -1
 params.envs.cartpole.init_high = 1
-params.envs.cartpole.cost_fn = lambda vals:  vals["theta"]**2 + (params.eps * (vals["u"]**2))

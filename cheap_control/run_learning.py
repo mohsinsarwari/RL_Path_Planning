@@ -1,19 +1,18 @@
-#! /usr/bin/python 
 """
 @Mohsin
 
 This is the file that will train the model on the passed in parameters 
 
 Configure the model and environment parameters in params.py and then use this to run
-
 """
+
 import os
 import gym
 import csv
 import numpy as np
 import torch as th
 from io import StringIO
-from datetime import datetime
+import datetime
 import json
 import dill as pickle # so that we can pickle lambda functions
 
@@ -28,24 +27,36 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 BASE_PATH = "./Runs"
 
-def run_learning(params, env_params, path):
+def run_learning(params):
 
-    models_path = os.path.join(path, "models")
-    os.mkdir(models_path)
+    #------------Setup Folders and log file------------------------------
 
-    tb_log_path = os.path.join(path, "tb_log_path")
-    os.mkdir(tb_log_path)
+    current_time = datetime.datetime.now()
+    folder_name = current_time.strftime("%m_%d_%Y_%H%M%S") + "_" + params.runner
 
-    for eps in params.eps:
+    path = os.path.join(BASE_PATH, folder_name)
+    os.mkdir(path)
 
-        env_params.ep = eps
-        subfolder = "eps_{}".format(eps)
 
-        print("-----------------------------------------")
-        print("ON " + subfolder)
+    #-----------Train each model for the different environments---------
 
-        model_path = os.path.join(models_path, subfolder)
-        os.mkdir(model_path)
+    f = open("./log.txt", "+a")
+    f.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
+    f.close()
+
+    for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
+
+        if not env_params.run:
+            continue
+
+        env_path = os.path.join(path, env_name)
+        os.mkdir(env_path)
+
+        models_path = os.path.join(env_path, "models")
+        os.mkdir(models_path)
+
+        tensorboard_log = os.path.join(env_path, "tensorboard_log")
+        os.mkdir(tensorboard_log)
 
         env = env_params.env
         env.set_params(env_params)
@@ -58,13 +69,14 @@ def run_learning(params, env_params, path):
         #create callback function to occasionally evaluate the performance
         #of the agent throughout training
         eval_callback = EvalCallback(eval_env,
-                                 best_model_save_path=model_path,
+                                 best_model_save_path=models_path,
                                  eval_freq=params.eval_freq,
+                                 log_path=env_path,
                                  deterministic=True,
                                  render=False)
 
         save_callback = CheckpointCallback(save_freq=params.save_freq, 
-                                            save_path=model_path,
+                                            save_path=models_path,
                                             name_prefix='rl_model')
 
         #create list of callbacks that will be chain-called by the learning algorithm
@@ -72,40 +84,22 @@ def run_learning(params, env_params, path):
 
         # Make Model
         #command to run tensorboard from command prompt
-        #tensorboard --logdir=/home/mohsin/research/RL_new/
         model = SAC(MlpPolicy,
                     env,
                     gamma = params.gamma,
+                    learning_rate = params.learning_rate,
                     use_sde = True,
                     policy_kwargs=params.policy_kwargs,
                     verbose = 1,
-                    tensorboard_log = tb_log_path
+                    tensorboard_log = tensorboard_log
                     )
 
-        # Execute learning 
-        print("Executing Learning...")  
-        model.learn(total_timesteps=params.timesteps, callback=callback, tb_log_name=subfolder)
-        print("Done running learning")
+        # Execute learning   
+        model.learn(total_timesteps=params.timesteps, callback=callback)
 
-for trial in range(params.num_trials):
+    with open(os.path.join(path, "params.pkl"), 'wb') as pick:
+        pickle.dump(params, pick, pickle.HIGHEST_PROTOCOL)
 
-    root_path = os.path.join(BASE_PATH, params.run_name + "_Trial" + str(trial))
+if __name__=="__main__":
+    run_learning(params)
 
-    try:
-        os.mkdir(root_path)
-    except FileExistsError:
-        print("Overriding folder ", params.run_name)
-
-    for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
-        if env_params.run:
-            print("Running on ", env_name)
-            path = os.path.join(root_path, env_name)
-            try:
-                os.mkdir(path)
-            except FileExistsError:
-                print("Overriding folder ", params.run_name)
-
-            with open(os.path.join(path, "params.pkl"), 'wb') as f:
-                pickle.dump(params, f, pickle.HIGHEST_PROTOCOL)
-
-            run_learning(params, env_params, path)

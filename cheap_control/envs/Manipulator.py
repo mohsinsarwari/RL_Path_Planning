@@ -68,13 +68,24 @@ class Manipulator(gym.Env):
 
         self.state = self.state + (self.params.dt * derivatives)
 
-        costs = self.params.cost_fn(self.state_to_dict(self.state, u))
+        costs = self.get_cost(u)
 
         self.curr_step += 1
+
+        theta_normalized = self.angle_normalize(theta)
+
         self.done = bool(
-            self.curr_step == self.num_steps)
- 
+            self.curr_step == self.num_steps
+            or theta_normalized > (np.pi / 2))
+
         return self.state, -costs, self.done, {}
+
+    def get_cost(self, u):
+
+        theta = self.angle_normalize(self.state[0])
+        theta_dot = self.state[1]
+
+        return (theta**2) + (self.env_params.eps*(u**2))
 
     def reset(self):
         self.state = np.random.uniform(self.params.init_low, self.params.init_high, (4,))
@@ -122,12 +133,3 @@ class Manipulator(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
-
-    def state_to_dict(self, state, u):
-        vals = dict()
-        vals["u"] = u
-        vals["theta"] = state[0]
-        vals["phi"] = state[1]
-        vals["theta_dot"] = state[2]
-        vals["phi_dot"] = state[3]
-        return vals

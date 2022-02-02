@@ -8,24 +8,24 @@ from os import path
 class Pendulum(gym.Env):
     """
     Description:
-        Pendulum model with 1 inputs: torque about its center.
+        Pendulum model with 1 input: torque about its center.
 
     Source:
         Gym
 
     Observation:
-        Type: Box(6)
+        Type: Box(2)
         Num     Observation               Min                     Max
-        2       theta                    -2pi                     2pi
-        5       theta-dot                ??                       ??
+        0       theta                     -pi                      pi
+        1       theta-dot                -inf                     inf
 
     Actions:
-        Type: Box(2)
+        Type: Box(1)
         Num   Action
-        1     Torque
+        0     Torque
 
     Reward:
-        Cost function part of params
+        -theta
 
     Starting State:
         All observations are assigned a uniform random value in [-1..1]
@@ -41,7 +41,10 @@ class Pendulum(gym.Env):
     def set_params(self, env_params):
         self.env_params = env_params
         self.action_space = spaces.Box(low=env_params.min_input, high=env_params.max_input, shape=(1,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=env_params.min_state, high=env_params.max_state,shape=(2,), dtype=np.float32)
+
+        high = np.array([np.finfo(np.float32).max, np.finfo(np.float32).max], dtype=np.float32)
+        self.observation_space = spaces.Box(low=-high, high=high, shape=(2,), dtype=np.float32)
+        
         self.num_steps = self.env_params.total_time // self.env_params.dt
         env_params.seed = self.seed()
         self.viewer = None
@@ -69,8 +72,7 @@ class Pendulum(gym.Env):
         theta_normalized = self.angle_normalize(theta)
 
         self.done = bool(
-            self.curr_step == self.num_steps
-            or theta_normalized > (np.pi / 2))
+            self.curr_step == self.num_steps)
 
         return self.state, -costs, self.done, {}
 
@@ -79,7 +81,7 @@ class Pendulum(gym.Env):
         theta = self.angle_normalize(self.state[0])
         theta_dot = self.state[1]
 
-        return (theta**2) + (self.env_params.ep*(u**2))
+        return (theta**2) + (self.env_params.eps*(u**2))
 
     def reset(self):
         self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (2,))

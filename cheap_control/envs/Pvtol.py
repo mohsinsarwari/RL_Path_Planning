@@ -79,15 +79,24 @@ class Pvtol(gym.Env):
         self.state = self.state + (self.params.dt * derivatives)
         self.state[2] = self.state[2] % (2*np.pi)
 
-        costs = self.params.cost_fn(self.state_to_dict(self.state, u))
+        costs = self.get_cost(u)
 
         self.curr_step += 1
+
+        theta_normalized = self.angle_normalize(theta)
+
         self.done = bool(
             self.curr_step == self.num_steps
-            or abs(x) > self.params.max_state
-            or abs(y) > self.params.max_state)
- 
+            or theta_normalized > (np.pi / 2))
+
         return self.state, -costs, self.done, {}
+
+    def get_cost(self, u):
+
+        theta = self.angle_normalize(self.state[2])
+        theta_dot = self.state[5]
+
+        return (theta**2) + (self.env_params.eps*(u**2))
 
     def reset(self):
         self.state = np.random.uniform(self.params.init_low, self.params.init_high, (6,))
@@ -139,15 +148,3 @@ class Pvtol(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
-
-    def state_to_dict(self, state, u):
-        vals = dict()
-        vals["u1"] = u[0]
-        vals["u2"] = u[1]
-        vals["x"] = state[0]
-        vals["y"] = state[1]
-        vals["theta"] = state[2]
-        vals["x_dot"] = state[3]
-        vals["y_dot"] = state[4]
-        vals["theta_dot"] = state[5]
-        return vals
