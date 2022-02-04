@@ -6,7 +6,6 @@ channels:
 dependencies:
   - absl-py
   - aiohttp
-  - appnope
   - argon2-cffi
   - astor
   - astunparse
