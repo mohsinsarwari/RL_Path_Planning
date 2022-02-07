@@ -59,11 +59,11 @@ def run_learning(params):
         os.mkdir(tensorboard_log)
 
         env = env_params.env
-        env.set_params(env_params)
+        env.set_params(params)
         env.reset()
 
         eval_env = env_params.eval_env
-        eval_env.set_params(env_params)
+        eval_env.set_params(params)
         eval_env.reset()
 
         #create callback function to occasionally evaluate the performance

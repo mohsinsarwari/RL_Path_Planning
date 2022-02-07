@@ -51,15 +51,16 @@ class Pendulum(gym.Env):
     def set_init(self, init):
         self.init = init
 
-    def set_params(self, env_params):
-        self.env_params = env_params
-        self.action_space = spaces.Box(low=env_params.min_input, high=env_params.max_input, shape=(1,), dtype=np.float32)
+    def set_params(self, params):
+        self.global_params = params
+        self.env_params = params.envs.newpendulum
+        self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(1,), dtype=np.float32)
 
         high = np.array([1, 1, np.finfo(np.float32).max], dtype=np.float32)
         self.observation_space = spaces.Box(low=-high, high=high, shape=(3,), dtype=np.float32)
         
-        self.num_steps = self.env_params.total_time // self.env_params.dt
-        env_params.seed = self.seed()
+        self.num_steps = self.global_params.total_time // self.global_params.dt
+        self.env_params.seed = self.seed()
         self.viewer = None
         self.done = False
 
@@ -76,7 +77,7 @@ class Pendulum(gym.Env):
         derivatives = np.array([theta_dot, 
                                 ((self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) - (self.env_params.lam * theta_dot / self.env_params.m) + (u / (self.env_params.m * ((self.env_params.l / 2) ** 2)))])
 
-        self.state = [theta, theta_dot] + (self.env_params.dt * derivatives)
+        self.state = [theta, theta_dot] + (self.global_params.dt * derivatives)
 
         costs = self.get_cost(u)
 
@@ -94,7 +95,7 @@ class Pendulum(gym.Env):
         theta = self.state[0]
         theta_dot = self.state[1]
 
-        return (theta**2) + (self.env_params.eps*(u**2))
+        return (theta**2) + (self.global_params.eps*(u**2))
 
     def reset(self):
         if self.evalenv:

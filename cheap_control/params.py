@@ -24,7 +24,7 @@ params.timesteps = 200000
 params.gamma = 0.98
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = 0.1
+params.eps = 10
 params.dt = 0.01
 params.total_time = 5
 params.trials = 3
@@ -38,13 +38,10 @@ params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.pendulum.g = 5 #gravity
 params.envs.pendulum.lam = 0.01 #damping coefficient
-params.envs.pendulum.eps = params.eps
 params.envs.pendulum.max_input = 5
 params.envs.pendulum.min_input = -5
 params.envs.pendulum.init_low = [-np.pi, -0.1]
 params.envs.pendulum.init_high = [np.pi, 0.1]
-params.envs.pendulum.dt = params.dt
-params.envs.pendulum.total_time = params.total_time
 
 params.envs.newpendulum.env = NewPendulum.Pendulum() #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum(evalenv=True) #extra env for eval callback
