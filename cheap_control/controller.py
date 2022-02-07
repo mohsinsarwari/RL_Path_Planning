@@ -4,12 +4,12 @@ import itertools
 from run_learning import *
 from params import *
 
+#TO DO: Setup values to loop over
 eps = [10, 1, 0.1, 0.01]
 gamma = [0.95, 0.98, 0.99]
 learning_rate = [0.003, 0.0003, 0.00003]
-
-
 combos = list(itertools.product(eps, gamma, learning_rate))
+
 num_combos = len(combos)
 curr_combo = 1
 time_left = 0
@@ -26,6 +26,7 @@ for combo in combos:
 	f.write("Estimated Time Left: {} \n".format(time_left))
 	f.close()
 
+	#TO DO: Unpack values based on order passed into line 11
 	params.eps = combo[0]
 	params.gamma = combo[1]
 	params.learning_rate = combo[2]
@@ -37,3 +38,9 @@ for combo in combos:
 
 	curr_combo += 1
 
+f = open("./log.txt", "+a")
+f.truncate(0)
+f.write("Done \n")
+f.write("Started: {} \n".format(beginning_time))
+f.write("Finished: {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
+f.close()

@@ -70,6 +70,7 @@ def run_learning(params):
         #of the agent throughout training
         eval_callback = EvalCallback(eval_env,
                                  best_model_save_path=models_path,
+                                 n_eval_episodes=4,
                                  eval_freq=params.eval_freq,
                                  log_path=env_path,
                                  deterministic=True,

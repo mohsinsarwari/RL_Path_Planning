@@ -18,38 +18,37 @@ import matplotlib.pyplot as plt
 
 BASE_PATH = "./Runs"
 
-def evaluate(path, model="best_model"):
+def evaluate(folder_name, model="best_model"):
 
 	results = dict()
 
-    path = os.mkdir(os.path.join(BASE_PATH, folder_name))
-
-    models_path = os.path.join(path, "models")
-
-	model = SAC.load(os.path.join(models_path, model))
+	path = os.path.join(BASE_PATH, folder_name)
 
 	with open(os.path.join(path, "params.pkl"), 'rb') as f:
-   		params = pickle.load(f)
+		params = pickle.load(f)
 
-    for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
+	for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
-    	env_results = dict()
+		if not env_params.run:
+			continue
 
-    	env_path = os.path.join(path, env_name)
+		models_path = os.path.join(path, env_name + "/models")
 
-        if not env_params.run:
-            continue
+		model = SAC.load(os.path.join(models_path, model))
 
-        env = env_params.eval_env
-        env.set_params(env_params)
-        env.reset()
+		env_results = dict()
+		env_path = os.path.join(path, env_name)
 
-        evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
+		env = env_params.eval_env
+		env.set_params(env_params)
+		env.reset()
 
-        env_results["mean_reward"] = [evaluations["timesteps"], evaluations["results"]]
+		evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
 
-        actions = []
-        states = []
+		env_results["mean_reward"] = [evaluations["timesteps"], evaluations["results"]]
+
+		actions = []
+		thetas = []
 
 		obs = env.reset()
 		done = False
@@ -57,14 +56,18 @@ def evaluate(path, model="best_model"):
 			action, _states = model.predict(obs)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			states.append(obs[0])
+			thetas.append(obs[0])
+			#env.render()
 
 		env_results["actions"] = actions
-		env_results["states"] = states
+		env_results["thetas"] = thetas
 
 		results[env_name] = env_results
 
 		env.close()
 
 	return results
+
+if __name__=="__main__":
+	evaluate("02_02_2022_191217_Mohsin")
 

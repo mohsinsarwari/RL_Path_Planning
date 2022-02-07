@@ -17,10 +17,10 @@ params = DotMap()
 
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "Hybrid Robotics Server"
-params.eval_freq = 2000
-params.save_freq = 20000
-params.timesteps = 200000
+params.device = "Home Server"
+params.eval_freq = 2
+params.save_freq = 20
+params.timesteps = 200
 params.gamma = 0.98
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
@@ -33,18 +33,33 @@ params.trials = 3
 
 params.envs.pendulum.env = Pendulum.Pendulum() #base env for simulation
 params.envs.pendulum.eval_env = Pendulum.Pendulum() #extra env for eval callback
-params.envs.pendulum.run = True #if you want run_learning to train on this env
+params.envs.pendulum.run = False #if you want run_learning to train on this env
 params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
-params.envs.pendulum.g = 1 #gravity
-params.envs.pendulum.lam = 0.005 #damping coefficient
+params.envs.pendulum.g = 5 #gravity
+params.envs.pendulum.lam = 0.01 #damping coefficient
 params.envs.pendulum.eps = params.eps
-params.envs.pendulum.max_input = 10
-params.envs.pendulum.min_input = -10
-params.envs.pendulum.init_low = [-2*np.pi, -0.1]
-params.envs.pendulum.init_high = [2*np.pi, 0.1]
+params.envs.pendulum.max_input = 5
+params.envs.pendulum.min_input = -5
+params.envs.pendulum.init_low = [-np.pi, -0.1]
+params.envs.pendulum.init_high = [np.pi, 0.1]
 params.envs.pendulum.dt = params.dt
 params.envs.pendulum.total_time = params.total_time
+
+params.envs.newpendulum.env = NewPendulum.Pendulum() #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
+params.envs.newpendulum.eval_env = NewPendulum.Pendulum(evalenv=True) #extra env for eval callback
+params.envs.newpendulum.run = True #if you want run_learning to train on this env
+params.envs.newpendulum.m = 1 #mass of pendulum
+params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
+params.envs.newpendulum.g = 5 #gravity
+params.envs.newpendulum.lam = 0.01 #damping coefficient
+params.envs.newpendulum.eps = params.eps
+params.envs.newpendulum.max_input = 5
+params.envs.newpendulum.min_input = -5
+params.envs.newpendulum.init_low = [-np.pi, -0.3] #state, not obs
+params.envs.newpendulum.init_high = [np.pi, 0.3]
+params.envs.newpendulum.dt = params.dt
+params.envs.newpendulum.total_time = params.total_time
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor()
