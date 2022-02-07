@@ -7,8 +7,8 @@ from params import *
 #TO DO: Setup values to loop over
 eps = [10, 1, 0.1, 0.01]
 gamma = [0.95, 0.98, 0.99]
-learning_rate = [0.003, 0.0003, 0.00003]
-combos = list(itertools.product(eps, gamma, learning_rate))
+#learning_rate = [0.003, 0.0003, 0.00003]
+combos = list(itertools.product(eps, gamma))
 
 num_combos = len(combos)
 curr_combo = 1
@@ -28,8 +28,8 @@ for combo in combos:
 
 	#TO DO: Unpack values based on order passed into line 11
 	params.eps = combo[0]
-	params.gamma = combo[1]
-	params.learning_rate = combo[2]
+	#params.gamma = combo[1]
+	#params.learning_rate = combo[2]
 
 	run_learning(params)
 
