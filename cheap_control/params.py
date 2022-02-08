@@ -20,7 +20,7 @@ params.runner = "Mohsin" #just your first name
 params.device = "Home Server"
 params.eval_freq = 2000
 params.save_freq = 20000
-params.timesteps = 200000
+params.timesteps = 150000
 params.gamma = 0.98
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)

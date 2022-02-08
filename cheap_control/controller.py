@@ -6,7 +6,7 @@ from params import *
 
 #TO DO: Setup values to loop over
 eps = [10, 1, 0.1, 0.01]
-gamma = [0.95, 0.98, 0.99]
+gamma = [0.98]
 #learning_rate = [0.003, 0.0003, 0.00003]
 combos = list(itertools.product(eps, gamma))
 
