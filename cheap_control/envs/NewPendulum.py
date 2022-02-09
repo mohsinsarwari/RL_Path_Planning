@@ -98,11 +98,11 @@ class Pendulum(gym.Env):
         return (theta**2) + (self.global_params.eps*(u**2))
 
     def reset(self):
-        if self.evalenv:
-            self.init = self.all_inits[self.curr_eval]
-            self.curr_eval += 1
-            if self.curr_eval == 5:
-                self.curr_eval = 0
+        # if self.evalenv:
+        #     self.init = self.all_inits[self.curr_eval]
+        #     self.curr_eval += 1
+        #     if self.curr_eval == 5:
+        #         self.curr_eval = 0
 
         if self.init:
             self.state = self.init

@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 BASE_PATH = "./Runs"
 
-def evaluate(folder_name, model="best_model"):
+def evaluate(folder_name, model="best_model", init=None):
 
 	results = dict()
 
@@ -40,7 +40,8 @@ def evaluate(folder_name, model="best_model"):
 		env_path = os.path.join(path, env_name)
 
 		env = env_params.eval_env
-		env.set_params(env_params)
+		env.set_params(params)
+		env.set_init(init)
 		env.reset()
 
 		evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
@@ -56,7 +57,7 @@ def evaluate(folder_name, model="best_model"):
 			action, _states = model.predict(obs)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			thetas.append(obs[0])
+			thetas.append(env.state[0])
 			#env.render()
 
 		env_results["actions"] = actions
