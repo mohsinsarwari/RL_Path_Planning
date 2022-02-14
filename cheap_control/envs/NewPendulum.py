@@ -16,8 +16,8 @@ class Pendulum(gym.Env):
     Observation:
         Type: Box(3)
         Num     Observation               Min                     Max
-        0       sin(theta)               -1                        1
-        1       cos(theta)               -1                        1
+        0       cos(theta)               -1                        1
+        1       sin(theta)               -1                        1
         2       theta-dot                -inf                     inf
 
     State:
@@ -40,29 +40,23 @@ class Pendulum(gym.Env):
     """
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, evalenv=False):
-        self.evalenv = evalenv
-        # extra init at beginning b/c reset is called after the last one
-        self.all_inits = [[0, 0], [0, 0], [np.pi/2, 0], [-np.pi/2, 0], [np.pi, 0]]
+    def __init__(self, params):
         self.curr_eval = 0
         self.init = False
-        pass
-
-    def set_init(self, init):
-        self.init = init
-
-    def set_params(self, params):
+        high = np.array([1, 1, 100000])
         self.global_params = params
         self.env_params = params.envs.newpendulum
         self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(1,), dtype=np.float32)
-
-        high = np.array([1, 1, np.finfo(np.float32).max], dtype=np.float32)
         self.observation_space = spaces.Box(low=-high, high=high, shape=(3,), dtype=np.float32)
         
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.env_params.seed = self.seed()
         self.viewer = None
         self.done = False
+        pass
+
+    def set_init(self, init):
+        self.init = init
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -74,8 +68,11 @@ class Pendulum(gym.Env):
         theta_dot = self.state[1] 
         u = action[0]
 
+        # damping term:  - (self.env_params.lam * theta_dot / self.env_params.m) 
         derivatives = np.array([theta_dot, 
-                                ((self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) - (self.env_params.lam * theta_dot / self.env_params.m) + (u / (self.env_params.m * ((self.env_params.l / 2) ** 2)))])
+                                ((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) \
+                                + (3 * u / (self.env_params.m * self.env_params.l ** 2))
+                                ])
 
         self.state = [theta, theta_dot] + (self.global_params.dt * derivatives)
 
@@ -83,27 +80,20 @@ class Pendulum(gym.Env):
 
         self.curr_step += 1
 
-        theta_normalized = self.angle_normalize(theta)
-
         self.done = bool(
             self.curr_step == self.num_steps)
 
-        return [np.sin(theta), np.cos(theta), theta_dot], -costs, self.done, {}
+        return self._get_obs(), -costs, self.done, {}
 
     def get_cost(self, u):
 
         theta = self.state[0]
         theta_dot = self.state[1]
 
-        return (theta**2) + (self.global_params.eps*(u**2))
+        return (self.angle_normalize(theta)**2) + (self.global_params.eps*(u**2))
 
     def reset(self):
-        # if self.evalenv:
-        #     self.init = self.all_inits[self.curr_eval]
-        #     self.curr_eval += 1
-        #     if self.curr_eval == 5:
-        #         self.curr_eval = 0
-
+        self.total_cost = 0
         if self.init:
             self.state = self.init
         else:
@@ -111,7 +101,11 @@ class Pendulum(gym.Env):
 
         self.curr_step = 0
         self.done = False
-        return [np.sin(self.state[0]), np.cos(self.state[0]), self.state[1]]
+        return self._get_obs()
+
+    def _get_obs(self):
+        theta, thetadot = self.state
+        return np.array([np.cos(theta), np.sin(theta), thetadot])
 
     def render(self, mode="human"):
         if self.viewer is None:

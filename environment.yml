@@ -1,11 +1,13 @@
 name: rl
 channels:
-  - pytorch
   - conda-forge
   - defaults
 dependencies:
+  - _pytorch_select
   - absl-py
   - aiohttp
+  - aiosignal
+  - appnope
   - argon2-cffi
   - astor
   - astunparse
@@ -13,8 +15,7 @@ dependencies:
   - async_generator
   - attrs
   - backcall
-  - backports
-  - backports.functools_lru_cache
+  - blas
   - bleach
   - blinker
   - brotli
@@ -22,11 +23,9 @@ dependencies:
   - c-ares
   - ca-certificates
   - cached-property
-  - cached_property
   - cachetools
   - certifi
   - cffi
-  - chardet
   - charset-normalizer
   - click
   - cryptography
@@ -40,8 +39,10 @@ dependencies:
   - expat
   - fonttools
   - freetype
+  - frozenlist
   - gast
   - gettext
+  - giflib
   - glib
   - google-auth
   - google-auth-oauthlib
@@ -72,24 +73,21 @@ dependencies:
   - kiwisolver
   - krb5
   - lcms2
-  - libblas
-  - libcblas
   - libcurl
   - libcxx
   - libedit
   - libev
   - libffi
   - libgfortran
-  - libgfortran5
   - libiconv
-  - liblapack
+  - libmklml
   - libnghttp2
-  - libopenblas
   - libpng
   - libprotobuf
   - libsodium
   - libssh2
   - libtiff
+  - libwebp
   - libwebp-base
   - libxml2
   - llvm-openmp
@@ -101,6 +99,9 @@ dependencies:
   - matplotlib-inline
   - mistune
   - mkl
+  - mkl-service
+  - mkl_fft
+  - mkl_random
   - multidict
   - munkres
   - nbclient
@@ -111,9 +112,9 @@ dependencies:
   - ninja
   - notebook
   - numpy
+  - numpy-base
   - oauthlib
   - olefile
-  - openjpeg
   - openssl
   - opt_einsum
   - packaging
@@ -122,7 +123,7 @@ dependencies:
   - pcre
   - pexpect
   - pickleshare
-  - pip=20.2.4
+  - pip
   - prometheus_client
   - prompt-toolkit
   - prompt_toolkit
@@ -138,12 +139,11 @@ dependencies:
   - pyqt
   - pyrsistent
   - pysocks
-  - python=3.8.10
+  - python
   - python-dateutil
   - python-flatbuffers
   - python_abi
-  - pytorch=1.4.0
-  - pyu2f
+  - pytorch
   - pyzmq
   - qt
   - qtconsole
@@ -158,7 +158,7 @@ dependencies:
   - sip
   - six
   - sqlite
-  - tensorboard=2.6.0
+  - tensorboard
   - tensorboard-data-server
   - tensorboard-plugin-wit
   - tensorflow-estimator
@@ -186,12 +186,12 @@ dependencies:
   - zstd
   - pip:
     - cloudpickle
-    - cython==0.29.25
+    - cython
     - dill
     - dotmap
     - fasteners
     - glfw
-    - gym==0.21.0
+    - gym
     - imageio
     - mpmath
     - mujoco-py
@@ -199,8 +199,8 @@ dependencies:
     - pillow
     - pyglet
     - pytz
-    - stable-baselines3==1.2.0
+    - stable-baselines3
     - sympy
-    - torch==1.9.1
-    - torchvision==0.10.1
+    - torch
+    - torchvision
 prefix: /opt/anaconda3/envs/rl

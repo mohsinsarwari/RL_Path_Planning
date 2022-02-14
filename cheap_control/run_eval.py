@@ -58,7 +58,9 @@ def evaluate(folder_name, model="best_model", init=None):
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
 			thetas.append(env.state[0])
-			#env.render()
+			env.render()
+
+		env.reset()
 
 		env_results["actions"] = actions
 		env_results["thetas"] = thetas
@@ -70,5 +72,5 @@ def evaluate(folder_name, model="best_model", init=None):
 	return results
 
 if __name__=="__main__":
-	evaluate("02_02_2022_191217_Mohsin")
+	evaluate("02_09_2022_231611_Mohsin", init=[-0.8, 0])
 

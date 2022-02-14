@@ -13,20 +13,18 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 params = DotMap()
 
-
-
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "Home Server"
-params.eval_freq = 2000
-params.save_freq = 20000
-params.timesteps = 150000
+params.device = "Hybrid Server"
+params.eval_freq = 1000
+params.save_freq = 50000
+params.timesteps = 300000
 params.gamma = 0.98
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
-params.eps = 10
-params.dt = 0.01
-params.total_time = 5
+params.eps = 0.01
+params.dt = 0.05
+params.total_time = 10
 params.trials = 3
 
 #Env Specific Params
@@ -43,20 +41,17 @@ params.envs.pendulum.min_input = -5
 params.envs.pendulum.init_low = [-np.pi, -0.1]
 params.envs.pendulum.init_high = [np.pi, 0.1]
 
-params.envs.newpendulum.env = NewPendulum.Pendulum() #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
-params.envs.newpendulum.eval_env = NewPendulum.Pendulum(evalenv=True) #extra env for eval callback
+params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
+params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
 params.envs.newpendulum.run = True #if you want run_learning to train on this env
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
-params.envs.newpendulum.g = 5 #gravity
+params.envs.newpendulum.g = 3 #gravity
 params.envs.newpendulum.lam = 0.01 #damping coefficient
-params.envs.newpendulum.eps = params.eps
-params.envs.newpendulum.max_input = 5
-params.envs.newpendulum.min_input = -5
+params.envs.newpendulum.max_input = 4
+params.envs.newpendulum.min_input = -4
 params.envs.newpendulum.init_low = [-np.pi, -0.3] #state, not obs
 params.envs.newpendulum.init_high = [np.pi, 0.3]
-params.envs.newpendulum.dt = params.dt
-params.envs.newpendulum.total_time = params.total_time
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor()

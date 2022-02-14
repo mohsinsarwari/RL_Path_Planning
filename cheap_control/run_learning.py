@@ -58,19 +58,17 @@ def run_learning(params):
         tensorboard_log = os.path.join(env_path, "tensorboard_log")
         os.mkdir(tensorboard_log)
 
-        env = env_params.env
-        env.set_params(params)
+        env = env_params.env(params)
         env.reset()
 
-        eval_env = env_params.eval_env
-        eval_env.set_params(params)
+        eval_env = env_params.eval_env(params)
         eval_env.reset()
 
         #create callback function to occasionally evaluate the performance
         #of the agent throughout training
         eval_callback = EvalCallback(eval_env,
                                  best_model_save_path=models_path,
-                                 n_eval_episodes=4,
+                                 n_eval_episodes=15,
                                  eval_freq=params.eval_freq,
                                  log_path=env_path,
                                  deterministic=True,
@@ -92,6 +90,7 @@ def run_learning(params):
                     use_sde = True,
                     policy_kwargs=params.policy_kwargs,
                     verbose = 1,
+                    device="cuda",
                     tensorboard_log = tensorboard_log
                     )
 
