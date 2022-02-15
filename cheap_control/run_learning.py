@@ -29,22 +29,22 @@ BASE_PATH = "./Runs"
 
 def run_learning(params):
 
-    #------------Setup Folders and log file------------------------------
-
-    current_time = datetime.datetime.now()
-    folder_name = current_time.strftime("%m_%d_%Y_%H%M%S") + "_" + params.runner
-
-    path = os.path.join(BASE_PATH, folder_name)
-    os.mkdir(path)
-
-
-    #-----------Train each model for the different environments---------
-
-    f = open("./log.txt", "+a")
-    f.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
-    f.close()
-
     for i in np.arange(params.trials):
+
+        #------------Setup Folders and log file------------------------------
+
+        current_time = datetime.datetime.now()
+        folder_name = current_time.strftime("%m_%d_%Y_%H%M%S") + "_" + params.runner
+
+        path = os.path.join(BASE_PATH, folder_name)
+        os.mkdir(path)
+
+
+        #-----------Train each model for the different environments---------
+
+        f = open("./log.txt", "+a")
+        f.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
+        f.close()
 
         for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
