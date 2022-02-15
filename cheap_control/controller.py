@@ -10,7 +10,7 @@ gamma = [0.98]
 #learning_rate = [0.003, 0.0003, 0.00003]
 combos = list(itertools.product(eps, gamma))
 
-num_combos = len(combos)
+num_combos = len(combos*params.trials)
 curr_combo = 1
 time_left = 0
 beginning_time = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
