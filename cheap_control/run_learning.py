@@ -44,61 +44,63 @@ def run_learning(params):
     f.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
     f.close()
 
-    for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
+    for i in np.arange(params.trials):
 
-        if not env_params.run:
-            continue
+        for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
-        env_path = os.path.join(path, env_name)
-        os.mkdir(env_path)
+            if not env_params.run:
+                continue
 
-        models_path = os.path.join(env_path, "models")
-        os.mkdir(models_path)
+            env_path = os.path.join(path, env_name)
+            os.mkdir(env_path)
 
-        tensorboard_log = os.path.join(env_path, "tensorboard_log")
-        os.mkdir(tensorboard_log)
+            models_path = os.path.join(env_path, "models")
+            os.mkdir(models_path)
 
-        env = env_params.env(params)
-        env.reset()
+            tensorboard_log = os.path.join(env_path, "tensorboard_log")
+            os.mkdir(tensorboard_log)
 
-        eval_env = env_params.eval_env(params)
-        eval_env.reset()
+            env = env_params.env(params)
+            env.reset()
 
-        #create callback function to occasionally evaluate the performance
-        #of the agent throughout training
-        eval_callback = EvalCallback(eval_env,
-                                 best_model_save_path=models_path,
-                                 n_eval_episodes=15,
-                                 eval_freq=params.eval_freq,
-                                 log_path=env_path,
-                                 deterministic=True,
-                                 render=False)
+            eval_env = env_params.eval_env(params, init=[np.pi, 0])
+            eval_env.reset()
 
-        save_callback = CheckpointCallback(save_freq=params.save_freq, 
-                                            save_path=models_path,
-                                            name_prefix='rl_model')
+            #create callback function to occasionally evaluate the performance
+            #of the agent throughout training
+            eval_callback = EvalCallback(eval_env,
+                                     best_model_save_path=models_path,
+                                     n_eval_episodes=5,
+                                     eval_freq=params.eval_freq,
+                                     log_path=env_path,
+                                     deterministic=True,
+                                     render=False)
 
-        #create list of callbacks that will be chain-called by the learning algorithm
-        callback = [eval_callback, save_callback]
+            save_callback = CheckpointCallback(save_freq=params.save_freq, 
+                                                save_path=models_path,
+                                                name_prefix='rl_model')
 
-        # Make Model
-        #command to run tensorboard from command prompt
-        model = SAC(MlpPolicy,
-                    env,
-                    gamma = params.gamma,
-                    learning_rate = params.learning_rate,
-                    use_sde = True,
-                    policy_kwargs=params.policy_kwargs,
-                    verbose = 1,
-                    device="cuda",
-                    tensorboard_log = tensorboard_log
-                    )
+            #create list of callbacks that will be chain-called by the learning algorithm
+            callback = [eval_callback, save_callback]
 
-        # Execute learning   
-        model.learn(total_timesteps=params.timesteps, callback=callback)
+            # Make Model
+            #command to run tensorboard from command prompt
+            model = SAC(MlpPolicy,
+                        env,
+                        gamma = params.gamma,
+                        learning_rate = params.learning_rate,
+                        use_sde = True,
+                        policy_kwargs=params.policy_kwargs,
+                        verbose = 1,
+                        device="cuda",
+                        tensorboard_log = tensorboard_log
+                        )
 
-    with open(os.path.join(path, "params.pkl"), 'wb') as pick:
-        pickle.dump(params, pick, pickle.HIGHEST_PROTOCOL)
+            # Execute learning   
+            model.learn(total_timesteps=params.timesteps, callback=callback)
+
+        with open(os.path.join(path, "params.pkl"), 'wb') as pick:
+            pickle.dump(params, pick, pickle.HIGHEST_PROTOCOL)
 
 if __name__=="__main__":
     run_learning(params)

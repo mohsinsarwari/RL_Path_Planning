@@ -18,13 +18,13 @@ params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
 params.eval_freq = 1000
 params.save_freq = 50000
-params.timesteps = 300000
+params.timesteps = 275000
 params.gamma = 0.98
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 0.01
-params.dt = 0.05
-params.total_time = 10
+params.dt = 0.01
+params.total_time = 5
 params.trials = 3
 
 #Env Specific Params
@@ -35,7 +35,7 @@ params.envs.pendulum.run = False #if you want run_learning to train on this env
 params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.pendulum.g = 5 #gravity
-params.envs.pendulum.lam = 0.01 #damping coefficient
+params.envs.pendulum.lam = 0.1 #damping coefficient
 params.envs.pendulum.max_input = 5
 params.envs.pendulum.min_input = -5
 params.envs.pendulum.init_low = [-np.pi, -0.1]
@@ -47,7 +47,7 @@ params.envs.newpendulum.run = True #if you want run_learning to train on this en
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.newpendulum.g = 3 #gravity
-params.envs.newpendulum.lam = 0.01 #damping coefficient
+params.envs.newpendulum.lam = 0.05 #damping coefficient
 params.envs.newpendulum.max_input = 4
 params.envs.newpendulum.min_input = -4
 params.envs.newpendulum.init_low = [-np.pi, -0.3] #state, not obs

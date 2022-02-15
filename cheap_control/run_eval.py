@@ -1,4 +1,5 @@
 import os
+import argparse
 import gym
 import csv
 import ast
@@ -18,7 +19,7 @@ import matplotlib.pyplot as plt
 
 BASE_PATH = "./Runs"
 
-def evaluate(folder_name, model="best_model", init=None):
+def evaluate(folder_name, model="best_model", init=None, render=False, iterations=10):
 
 	results = dict()
 
@@ -39,8 +40,7 @@ def evaluate(folder_name, model="best_model", init=None):
 		env_results = dict()
 		env_path = os.path.join(path, env_name)
 
-		env = env_params.eval_env
-		env.set_params(params)
+		env = env_params.eval_env(params)
 		env.set_init(init)
 		env.reset()
 
@@ -53,12 +53,14 @@ def evaluate(folder_name, model="best_model", init=None):
 
 		obs = env.reset()
 		done = False
+		
 		while not done:
 			action, _states = model.predict(obs)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			thetas.append(env.state[0])
-			env.render()
+			thetas.append(env.angle_normalize(env.state[0]))
+			if render:
+				env.render()
 
 		env.reset()
 
@@ -72,5 +74,12 @@ def evaluate(folder_name, model="best_model", init=None):
 	return results
 
 if __name__=="__main__":
-	evaluate("02_09_2022_231611_Mohsin", init=[-0.8, 0])
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-folder', '-f', type=str, default=None, help='Folder to evaluate.  Default: None')
+	parser.add_argument('-iterations', '-i', type=str, default=10, help='Number of iterations')
+	args = parser.parse_args()
+	if args.folder:
+		evaluate(args.folder, render=True)
+	else:
+		evaluate("02_14_2022_135802_Mohsin", render=True, iterations=args.iterations)
 

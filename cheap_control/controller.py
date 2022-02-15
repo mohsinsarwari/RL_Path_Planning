@@ -5,7 +5,7 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-eps = [1, 0.1, 0.01, 0]
+eps = [15, 10, 5, 1, 0.1]
 gamma = [0.98]
 #learning_rate = [0.003, 0.0003, 0.00003]
 combos = list(itertools.product(eps, gamma))

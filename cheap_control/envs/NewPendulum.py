@@ -40,9 +40,9 @@ class Pendulum(gym.Env):
     """
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, params):
+    def __init__(self, params, init=None):
         self.curr_eval = 0
-        self.init = False
+        self.init = init
         high = np.array([1, 1, 100000])
         self.global_params = params
         self.env_params = params.envs.newpendulum
@@ -68,9 +68,10 @@ class Pendulum(gym.Env):
         theta_dot = self.state[1] 
         u = action[0]
 
-        # damping term:  - (self.env_params.lam * theta_dot / self.env_params.m) 
+        # damping term: 
         derivatives = np.array([theta_dot, 
                                 ((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) \
+                                 - (self.env_params.lam * theta_dot / self.env_params.m) \
                                 + (3 * u / (self.env_params.m * self.env_params.l ** 2))
                                 ])
 
@@ -141,4 +142,4 @@ class Pendulum(gym.Env):
             self.viewer = None
 
     def angle_normalize(self, x):
-        return abs(((x + np.pi) % (2 * np.pi)) - np.pi)
+        return ((x + np.pi) % (2 * np.pi)) - np.pi
