@@ -59,9 +59,12 @@ class BaseEnv(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, params, g=10.0, eps=0.01):
+    def __init__(self, params):
         self.params = params
         self.env_params = params.envs.baseenv
+
+        self.num_steps = self.params.total_time // self.params.dt
+        self.curr_step = 0
 
         high = 10000
 
@@ -74,16 +77,21 @@ class BaseEnv(gym.Env):
         deriv = self.state[0] + u[0]
         self.state = [self.state[0] + (deriv * self.params.dt)]
 
-        print(self.state)
-
         costs = self.state[0]**2 + self.params.eps*u[0]**2
-        return self._get_obs(), -costs, False, {}
+
+        print(self.state[0])
+
+        self.done = bool(
+            self.curr_step == self.num_steps
+            or abs(self.state[0]) > 1000000)
+
+        return self._get_obs(), -costs, self.done, {}
 
     def _get_obs(self):
         return self.state
 
     def reset(self):
-        high = np.array([np.pi, 1])
-        self.state = np.random.uniform(low=-high, high=high)
+        self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (1,))
         self.last_u = None
+        self.curr_step = 0
         return self._get_obs()

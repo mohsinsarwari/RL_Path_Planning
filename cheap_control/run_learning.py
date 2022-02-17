@@ -63,7 +63,7 @@ def run_learning(params):
             env = env_params.env(params)
             env.reset()
 
-            eval_env = env_params.eval_env(params, init=[np.pi, 0])
+            eval_env = env_params.eval_env(params)
             eval_env.reset()
 
             #create callback function to occasionally evaluate the performance

@@ -59,17 +59,19 @@ class PendulumEnv(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self, params, g=10.0):
+        self.params = params
         self.max_speed = 8
         self.max_torque = 2.0
-        self.dt = 0.05
+        self.dt = self.params.dt
         self.g = g
         self.m = 1.0
         self.l = 1.0
         self.screen = None
         self.isopen = True
-        self.params = params
         self.viewer = None
 
+        self.num_steps = self.params.total_time // self.params.dt
+        self.curr_step = 0
         self.screen_dim = 500
 
         high = np.array([1.0, 1.0, self.max_speed], dtype=np.float32)
@@ -95,11 +97,18 @@ class PendulumEnv(gym.Env):
         newth = th + newthdot * dt
 
         self.state = np.array([newth, newthdot])
-        return self._get_obs(), -costs, False, {}
+
+        self.curr_step += 1
+
+        self.done = bool(
+            self.curr_step == self.num_steps)
+
+        return self._get_obs(), -costs, self.done, {}
 
     def reset(self):
         high = np.array([np.pi, 1])
         self.state = np.random.uniform(low=-high, high=high)
+        self.curr_step = 0
         self.last_u = None
         return self._get_obs()
 
