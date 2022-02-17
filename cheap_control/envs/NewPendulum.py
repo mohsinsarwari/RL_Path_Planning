@@ -48,6 +48,8 @@ class Pendulum(gym.Env):
         self.env_params = params.envs.newpendulum
         self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(1,), dtype=np.float32)
         self.observation_space = spaces.Box(low=-high, high=high, shape=(3,), dtype=np.float32)
+
+        self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (2,))
         
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.env_params.seed = self.seed()
@@ -142,4 +144,4 @@ class Pendulum(gym.Env):
             self.viewer = None
 
     def angle_normalize(self, x):
-        return ((x + np.pi) % (2 * np.pi)) - np.pi
+        return abs(((x + np.pi) % (2 * np.pi)) - np.pi)

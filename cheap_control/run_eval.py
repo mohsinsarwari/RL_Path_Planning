@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 BASE_PATH = "./Runs"
 
 def evaluate(folder_name, model="best_model", init=None, render=False, iterations=10):
+	#init = [np.pi, 0]
 
 	results = dict()
 
@@ -53,12 +54,13 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 
 		obs = env.reset()
 		done = False
-		
+
 		while not done:
 			action, _states = model.predict(obs)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
 			thetas.append(env.angle_normalize(env.state[0]))
+			#thetas.append(env.state[0] % (2*np.pi))
 			if render:
 				env.render()
 
@@ -76,10 +78,10 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 if __name__=="__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-folder', '-f', type=str, default=None, help='Folder to evaluate.  Default: None')
-	parser.add_argument('-iterations', '-i', type=str, default=10, help='Number of iterations')
+	#parser.add_argument('-init', '-i', type=str, default=None, help='init')
 	args = parser.parse_args()
 	if args.folder:
 		evaluate(args.folder, render=True)
 	else:
-		evaluate("02_14_2022_135802_Mohsin", render=True, iterations=args.iterations)
+		evaluate("02_15_2022_123458_Mohsin", render=True)
 
