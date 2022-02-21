@@ -18,7 +18,7 @@ import dill as pickle # so that we can pickle lambda functions
 
 from params import *
 
-from stable_baselines3 import SAC
+from stable_baselines3 import SAC, PPO
 from stable_baselines3.sac import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.logger import configure
@@ -70,7 +70,7 @@ def run_learning(params):
             #of the agent throughout training
             eval_callback = EvalCallback(eval_env,
                                      best_model_save_path=models_path,
-                                     n_eval_episodes=5,
+                                     n_eval_episodes=10,
                                      eval_freq=params.eval_freq,
                                      log_path=env_path,
                                      deterministic=True,
@@ -85,16 +85,28 @@ def run_learning(params):
 
             # Make Model
             #command to run tensorboard from command prompt
-            model = SAC(MlpPolicy,
-                        env,
-                        gamma = params.gamma,
-                        learning_rate = params.learning_rate,
-                        use_sde = True,
-                        policy_kwargs=params.policy_kwargs,
-                        verbose = 1,
-                        device="cuda",
-                        tensorboard_log = tensorboard_log
-                        )
+            if params.algorithm=="SAC":
+                model = SAC(MlpPolicy,
+                            env,
+                            gamma = params.gamma,
+                            learning_rate = params.learning_rate,
+                            use_sde = True,
+                            policy_kwargs=params.policy_kwargs,
+                            verbose = 1,
+                            device="cuda",
+                            tensorboard_log = tensorboard_log
+                            )
+            elif params.algorithm=="PPO":
+                model = PPO(MlpPolicy,
+                            env,
+                            gamma = params.gamma,
+                            learning_rate = params.learning_rate,
+                            use_sde = True,
+                            policy_kwargs=params.policy_kwargs,
+                            verbose = 1,
+                            device="cuda",
+                            tensorboard_log = tensorboard_log
+                            )                
 
             # Execute learning   
             model.learn(total_timesteps=params.timesteps, callback=callback)

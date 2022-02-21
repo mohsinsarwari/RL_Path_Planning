@@ -41,8 +41,8 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 		env_results = dict()
 		env_path = os.path.join(path, env_name)
 
-		env = env_params.eval_env(params)
-		env.set_init(init)
+		env = env_params.eval_env(params, init=init)
+		#env.set_init(init)
 		env.reset()
 
 		evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
@@ -59,7 +59,7 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 			action, _states = model.predict(obs)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			thetas.append(env.angle_normalize(env.state[0]))
+			thetas.append(angle_normalize(env.state[0]))
 			#thetas.append(env.state[0] % (2*np.pi))
 			if render:
 				env.render()
@@ -74,6 +74,9 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 		env.close()
 
 	return results
+
+def angle_normalize(x):
+    return ((x + np.pi) % (2 * np.pi)) - np.pi
 
 if __name__=="__main__":
 	parser = argparse.ArgumentParser()

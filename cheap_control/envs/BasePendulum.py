@@ -58,7 +58,8 @@ class PendulumEnv(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
-    def __init__(self, params, g=10.0):
+    def __init__(self, params, g=10.0, init=None):
+        self.init = init
         self.params = params
         self.max_speed = 8
         self.max_torque = 2.0
@@ -107,7 +108,10 @@ class PendulumEnv(gym.Env):
 
     def reset(self):
         high = np.array([np.pi, 1])
-        self.state = np.random.uniform(low=-high, high=high)
+        if self.init:
+            self.state = self.init
+        else:
+            self.state = np.random.uniform(low=-high, high=high)
         self.curr_step = 0
         self.last_u = None
         return self._get_obs()

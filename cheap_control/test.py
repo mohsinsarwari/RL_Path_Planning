@@ -22,4 +22,6 @@ for i_episode in range(10):
         #print(action)
         #env.render()
         obs, reward, done, info = env.step(action)
+
+    print("Done")
 env.close()

@@ -16,18 +16,19 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 0
+params.id = 1
 params.eval_freq = 1000
-params.save_freq = 50000
-params.timesteps = 100000
+params.save_freq = 500000
+params.timesteps = 1500000
 params.gamma = 0.99
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
-params.total_time = 10
-params.trials = 3
+params.total_time = 5
+params.trials = 1
 
+params.algorithm = "SAC"
 #Env Specific Params
 
 params.envs.pendulum.env = Pendulum.Pendulum() #base env for simulation
@@ -44,15 +45,15 @@ params.envs.pendulum.init_high = [np.pi, 0.1]
 
 params.envs.basependulum.env = BasePendulum.PendulumEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.basependulum.eval_env = BasePendulum.PendulumEnv #extra env for eval callback
-params.envs.basependulum.run = False
+params.envs.basependulum.run = True
 
 params.envs.baseenv.env = BaseEnv.BaseEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.baseenv.eval_env = BaseEnv.BaseEnv #extra env for eval callback
-params.envs.baseenv.max_input = 2
-params.envs.baseenv.min_input = -2
+params.envs.baseenv.max_input = 1
+params.envs.baseenv.min_input = -1
 params.envs.baseenv.init_low = -1
 params.envs.baseenv.init_high = 1
-params.envs.baseenv.run = True
+params.envs.baseenv.run = False
 
 params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
