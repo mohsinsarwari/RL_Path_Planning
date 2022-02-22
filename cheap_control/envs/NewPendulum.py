@@ -92,8 +92,6 @@ class Pendulum(gym.Env):
         self.done = bool(
             self.curr_step == self.num_steps)
 
-        print(costs)
-
         return self._get_obs(), -costs, self.done, {}
 
     def get_cost1(self, u):
