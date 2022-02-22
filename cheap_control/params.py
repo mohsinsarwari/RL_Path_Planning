@@ -25,7 +25,7 @@ params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
-params.total_time = 5
+params.total_time = 10
 params.trials = 3
 
 params.algorithm = "SAC"

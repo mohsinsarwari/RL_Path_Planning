@@ -71,12 +71,16 @@ class Pendulum(gym.Env):
         u = action[0]
 
         # damping term:  - (self.env_params.lam * theta_dot / self.env_params.m) \
-        derivatives = np.array([theta_dot, 
-                                ((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) \
-                                + (3 * u / (self.env_params.m * self.env_params.l ** 2))
-                                ])
+        # derivatives = np.array([theta_dot, 
+        #                         ((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) + (3 * u / (self.env_params.m * self.env_params.l**2))])
 
-        self.state = [theta, theta_dot] + (self.global_params.dt * derivatives)
+        # self.state = [theta, theta_dot] + (self.global_params.dt * derivatives)
+
+        newtheta_dot = theta_dot + (((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) + (3 * u / (self.env_params.m * self.env_params.l**2))) * self.global_params.dt
+
+        newth = theta + newtheta_dot * self.global_params.dt
+
+        self.state = np.array([newth, newtheta_dot])
 
         if (self.env_params.cost_func == 1):
             costs = self.get_cost1(u)
@@ -87,6 +91,8 @@ class Pendulum(gym.Env):
 
         self.done = bool(
             self.curr_step == self.num_steps)
+
+        print(costs)
 
         return self._get_obs(), -costs, self.done, {}
 
