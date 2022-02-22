@@ -56,7 +56,7 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 		done = False
 
 		while not done:
-			action, _states = model.predict(obs)
+			action, _states = model.predict(obs, deterministic=True)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
 			thetas.append(angle_normalize(env.state[0]))

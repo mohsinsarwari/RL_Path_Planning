@@ -5,12 +5,13 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-eps = [5, 4, 3, 2, 1]
-gamma = [0.99]
-#learning_rate = [0.003, 0.0003, 0.00003]
-combos = list(itertools.product(eps, gamma))
+eps = [0.1, 0.5, 1, 2, 3, 5]
+cost_func = [1, 2]
+use_sde = [True, False]
 
-num_combos = len(combos*params.trials)
+combos = list(itertools.product(eps, cost_func, use_sde))
+
+num_combos = len(combos)
 curr_combo = 1
 time_left = 0
 beginning_time = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
@@ -28,8 +29,8 @@ for combo in combos:
 
 	#TO DO: Unpack values based on order passed into line 11
 	params.eps = combo[0]
-	#params.gamma = combo[1]
-	#params.learning_rate = combo[2]
+	params.envs.newpendulum.cost_func = combo[1]
+	params.use_sde = combo[2]
 
 	run_learning(params)
 

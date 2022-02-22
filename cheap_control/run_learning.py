@@ -20,6 +20,7 @@ from params import *
 
 from stable_baselines3 import SAC, PPO
 from stable_baselines3.sac import MlpPolicy
+
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.callbacks import EvalCallback
@@ -90,7 +91,7 @@ def run_learning(params):
                             env,
                             gamma = params.gamma,
                             learning_rate = params.learning_rate,
-                            use_sde = True,
+                            use_sde = params.use_sde,
                             policy_kwargs=params.policy_kwargs,
                             verbose = 1,
                             device="cuda",
@@ -99,11 +100,6 @@ def run_learning(params):
             elif params.algorithm=="PPO":
                 model = PPO(MlpPolicy,
                             env,
-                            gamma = params.gamma,
-                            learning_rate = params.learning_rate,
-                            use_sde = True,
-                            policy_kwargs=params.policy_kwargs,
-                            verbose = 1,
                             device="cuda",
                             tensorboard_log = tensorboard_log
                             )                
