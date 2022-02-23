@@ -16,10 +16,10 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 3
-params.eval_freq = 1000
-params.save_freq = 500000
-params.timesteps = 2000000
+params.id = 4
+params.eval_freq = 3000
+params.save_freq = 100000
+params.timesteps = 300000
 params.gamma = 0.99
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)

@@ -11,17 +11,19 @@ import pickle
 from dotmap import DotMap
 from params import *
 
-env = BaseEnv.BaseEnv(params)
+#env = BasePendulum.PendulumEnv(params)
+env = NewPendulum.Pendulum(params)
 
 for i_episode in range(10):
-    obs = env.reset()
-    done = False
-    while not done:
-        action = env.action_space.sample()
-        #action = [1]
-        #print(action)
-        #env.render()
-        obs, reward, done, info = env.step(action)
+	env.set_init([np.pi+0.5, 0])
+	obs = env.reset()
+	done = False
+	while not done:
+		action = env.action_space.sample()
+		action = [0]
+		#print(action)
+		env.render()
+		obs, reward, done, info = env.step(action)
 
-    print("Done")
+	print("Done")
 env.close()
