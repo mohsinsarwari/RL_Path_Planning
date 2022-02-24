@@ -16,7 +16,8 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 4
+params.id = 5
+params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
 params.timesteps = 300000
@@ -26,7 +27,7 @@ params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
 params.total_time = 10
-params.trials = 3
+params.trials = 2
 
 params.algorithm = "SAC"
 params.use_sde = True

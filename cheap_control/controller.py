@@ -5,11 +5,10 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-eps = [0.1, 0.5, 1, 2, 3, 5]
 cost_func = [1, 2]
-use_sde = [True, False]
+eps = [0.1, 1, 3, 5]
 
-combos = list(itertools.product(eps, cost_func, use_sde))
+combos = list(itertools.product(cost_func, eps))
 
 num_combos = len(combos)
 curr_combo = 1
@@ -28,16 +27,17 @@ for combo in combos:
 	f.close()
 
 	#TO DO: Unpack values based on order passed into line 11
-	params.eps = combo[0]
-	params.envs.newpendulum.cost_func = combo[1]
-	params.use_sde = combo[2]
+	params.cost_func = combo[0]
+	params.eps = combo[1]
 
 	run_learning(params)
+
+	params.trial_id += 1
 
 	time_left = (time.time() - startime) * (num_combos - curr_combo)
 	time_left = str(datetime.timedelta(seconds=time_left))
 
-	curr_combo += 1
+	curr_combo += params.trials
 
 f = open("./log.txt", "+a")
 f.truncate(0)
