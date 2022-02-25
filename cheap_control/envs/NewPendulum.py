@@ -55,7 +55,6 @@ class Pendulum(gym.Env):
         self.env_params.seed = self.seed()
         self.viewer = None
         self.done = False
-        pass
 
     def set_init(self, init):
         self.init = init
