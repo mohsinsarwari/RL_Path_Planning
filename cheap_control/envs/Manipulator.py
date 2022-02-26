@@ -10,8 +10,8 @@ class Manipulator(gym.Env):
     Description:
         Box with rod in center. Box is connected to rod with springs.
 
-    Source:
-        ???
+    State:
+        theta, phi, theta_dot, phi_dot
 
     Observation:
         Type: Box(4)
@@ -51,6 +51,7 @@ class Manipulator(gym.Env):
         self.observation_space = spaces.Box(low=-high, high=high,shape=(6,), dtype=np.float32)
         
         self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
+        self.state[0] = self.state[0] + self.state[1]
 
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None
@@ -84,7 +85,7 @@ class Manipulator(gym.Env):
             new_phi_dot = self.env_params.k3*(theta-phi) + u
             new_phi = phi + (self.global_params.dt * new_phi_dot)
 
-            new_theta_dot = self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta)
+            new_theta_dot = self.env_params.k1*np.sin(theta) + self.env_params.k2*(new_phi-theta)
             new_theta = theta + (self.global_params.dt * new_theta_dot)
 
             self.state = np.array([new_theta, new_phi, new_theta_dot, new_phi_dot])
@@ -104,13 +105,13 @@ class Manipulator(gym.Env):
     def get_cost1(self, u):
 
         theta = self.angle_normalize(self.state[0])
-        theta_dot = self.state[1]
+        theta_dot = self.state[2]
 
         return (theta**2) + ((self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
 
     def get_cost2(self, u):
 
-        phi = self.angle_normalize(self.state[2])
+        phi = self.angle_normalize(self.state[1])
         phi_dot = self.state[3]
 
         return (phi**2) + ((self.global_params.eps**0.5)*(phi_dot**2)) + (self.global_params.eps*(u**2))
@@ -120,6 +121,7 @@ class Manipulator(gym.Env):
             self.state = self.init
         else:
             self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
+            self.state[0] = self.state[0] + self.state[1]
         self.curr_step = 0
         self.done = False
         return self._get_obs()

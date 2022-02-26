@@ -5,9 +5,8 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-integration = ["direct", "sequential"]
 cost_func = [1, 2]
-eps = [0.1, 1]
+eps = [0.1, 1, 2, 3, 5]
 
 combos = list(itertools.product(integration, cost_func, eps))
 

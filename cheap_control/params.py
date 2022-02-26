@@ -16,11 +16,11 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 6
+params.id = 7
 params.trial_id = 0
-params.eval_freq = 5000
-params.save_freq = 250000
-params.timesteps = 500000
+params.eval_freq = 3000
+params.save_freq = 100000
+params.timesteps = 300000
 params.gamma = 0.99
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
@@ -41,8 +41,8 @@ params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
 params.envs.manipulator.max_input = 4
 params.envs.manipulator.min_input = -4
-params.envs.manipulator.init_low = [-0.1, -1, -0.1, -0.1] # note: the randomization of theta is around the value chosen for phi
-params.envs.manipulator.init_high = [0.1, 1, 0.1, 0.1]
+params.envs.manipulator.init_low = [-0.3, -1, -0.1, -0.1] # note: the randomization of theta is around the value chosen for phi
+params.envs.manipulator.init_high = [0.3, 1, 0.1, 0.1]
 params.envs.manipulator.integration = "direct" # direct or sequential
 params.envs.manipulator.cost_func = 1 # 1 is: theta 2 is phi
 
