@@ -51,6 +51,7 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 
 		actions = []
 		thetas = []
+		phis = []
 
 		obs = env.reset()
 		done = False
@@ -60,6 +61,7 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
 			thetas.append(angle_normalize(env.state[0]))
+			phis.append(angle_normalize(env.state[1]))
 			#thetas.append(env.state[0] % (2*np.pi))
 			if render:
 				env.render()
@@ -68,6 +70,7 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 
 		env_results["actions"] = actions
 		env_results["thetas"] = thetas
+		env_results["phis"] = phis
 
 		results[env_name] = env_results
 

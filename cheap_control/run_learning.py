@@ -98,7 +98,7 @@ def run_learning(params):
                             tensorboard_log = tensorboard_log
                             )
             elif params.algorithm=="PPO":
-                model = PPO(MlpPolicy,
+                model = PPO("MlpPolicy",
                             env,
                             device="cuda",
                             tensorboard_log = tensorboard_log
