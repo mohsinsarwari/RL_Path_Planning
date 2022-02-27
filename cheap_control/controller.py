@@ -6,9 +6,9 @@ from params import *
 
 #TO DO: Setup values to loop over
 cost_func = [1, 2]
-eps = [0.1, 1, 2, 3, 5]
+eps = [0.1, 1, 3, 5]
 
-combos = list(itertools.product(integration, cost_func, eps))
+combos = list(itertools.product(cost_func, eps))
 
 num_combos = len(combos*params.trials)
 curr_combo = 0
@@ -27,9 +27,9 @@ for combo in combos:
 	f.close()
 
 	#TO DO: Unpack values based on order passed into line 11
-	params.envs.manipulator.integration = combo[0]
-	params.envs.manipulator.cost_func = combo[1]
-	params.eps = combo[2]
+	#params.envs.manipulator.integration = combo[0]
+	params.envs.manipulator.cost_func = combo[0]
+	params.eps = combo[1]
 
 	run_learning(params)
 
