@@ -20,14 +20,14 @@ params.id = 8
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
-params.timesteps = 300000
+params.timesteps = 100000
 params.gamma = 0.99
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
-params.total_time = 10
-params.trials = 2
+params.total_time = 8
+params.trials = 1
 
 params.algorithm = "PPO"
 params.use_sde = True

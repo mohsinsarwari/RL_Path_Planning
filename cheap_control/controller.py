@@ -6,7 +6,7 @@ from params import *
 
 #TO DO: Setup values to loop over
 cost_func = [1, 2]
-eps = [0.1, 1, 3, 5]
+eps = [0.1, 5]
 use_sde = [True, False]
 algo = ["SAC", "PPO"]
 
