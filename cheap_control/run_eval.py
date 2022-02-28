@@ -13,7 +13,7 @@ from params import *
 
 from envs import *
 
-from stable_baselines3 import SAC
+from stable_baselines3 import SAC, PPO
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -36,7 +36,10 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 
 		models_path = os.path.join(path, env_name + "/models")
 
-		model = SAC.load(os.path.join(models_path, model))
+		if params.algorithm == "SAC":
+			model = SAC.load(os.path.join(models_path, model))
+		elif params.algorithm == "PPO":
+			model = PPO.load(os.path.join(models_path, model))
 
 		env_results = dict()
 		env_path = os.path.join(path, env_name)

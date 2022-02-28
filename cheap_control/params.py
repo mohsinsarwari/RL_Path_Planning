@@ -16,29 +16,31 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 8
+params.id = 9
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
-params.timesteps = 100000
+params.timesteps = 300000
 params.gamma = 0.99
 params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
 params.total_time = 8
-params.trials = 1
+params.trials = 2
 
-params.algorithm = "PPO"
+params.algorithm = "SAC"
 params.use_sde = True
 #Env Specific Params
 
 params.envs.manipulator.env = Manipulator.Manipulator
 params.envs.manipulator.eval_env = Manipulator.Manipulator
-params.envs.manipulator.run = False
+params.envs.manipulator.run = True
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
+params.envs.manipulator.b1 = 2
+params.envs.manipulator.b2 = 0.1
 params.envs.manipulator.max_input = 4
 params.envs.manipulator.min_input = -4
 params.envs.manipulator.init_low = [-0.3, -1, -0.1, -0.1] # note: the randomization of theta is around the value chosen for phi
@@ -60,7 +62,7 @@ params.envs.baseenv.run = False
 
 params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
-params.envs.newpendulum.run = True #if you want run_learning to train on this env
+params.envs.newpendulum.run = False #if you want run_learning to train on this env
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.newpendulum.g = 10 #gravity

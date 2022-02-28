@@ -82,7 +82,7 @@ def run_learning(params):
                                                 name_prefix='rl_model')
 
             #create list of callbacks that will be chain-called by the learning algorithm
-            callback = [eval_callback, save_callback]
+            callback = [eval_callback] #, save_callback]
 
             # Make Model
             #command to run tensorboard from command prompt

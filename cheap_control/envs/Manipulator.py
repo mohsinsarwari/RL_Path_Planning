@@ -75,8 +75,9 @@ class Manipulator(gym.Env):
         if (self.env_params.integration == "direct"):
 
             derivatives = np.array([theta_dot, phi_dot, 
-                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta),
-                                    self.env_params.k3*(theta-phi) + u])
+                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta) - self.env_params.b1*theta_dot,
+                                    self.env_params.k3*(theta-phi) + u - self.env_params.b2*phi_dot
+                                    ])
 
             self.state = self.state + (self.global_params.dt * derivatives)
 
