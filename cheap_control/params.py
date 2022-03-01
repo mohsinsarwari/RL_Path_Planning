@@ -16,7 +16,7 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 9
+params.id = 11
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -26,7 +26,7 @@ params.learning_rate = 0.0003
 params.policy_kwargs = dict(activation_fn=th.nn.Tanh)
 params.eps = 1
 params.dt = 0.05
-params.total_time = 8
+params.total_time = 10
 params.trials = 2
 
 params.algorithm = "SAC"
@@ -35,7 +35,7 @@ params.use_sde = True
 
 params.envs.manipulator.env = Manipulator.Manipulator
 params.envs.manipulator.eval_env = Manipulator.Manipulator
-params.envs.manipulator.run = True
+params.envs.manipulator.run = False
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
@@ -62,7 +62,7 @@ params.envs.baseenv.run = False
 
 params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
-params.envs.newpendulum.run = False #if you want run_learning to train on this env
+params.envs.newpendulum.run = True #if you want run_learning to train on this env
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.newpendulum.g = 10 #gravity
@@ -71,7 +71,7 @@ params.envs.newpendulum.max_input = 4
 params.envs.newpendulum.min_input = -4
 params.envs.newpendulum.init_low = [-np.pi, -1] #state, not obs
 params.envs.newpendulum.init_high = [np.pi, 1]
-params.envs.newpendulum.cost_func = 1 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
+params.envs.newpendulum.cost_func = 2 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
 
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
