@@ -108,14 +108,14 @@ class Manipulator(gym.Env):
         theta = self.angle_normalize(self.state[0])
         theta_dot = self.state[2]
 
-        return (theta**2) + ((self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
+        return (theta**2) + (self.env_params.alpha*(self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
 
     def get_cost2(self, u):
 
         phi = self.angle_normalize(self.state[1])
         phi_dot = self.state[3]
 
-        return (phi**2) + ((self.global_params.eps**0.5)*(phi_dot**2)) + (self.global_params.eps*(u**2))
+        return (phi**2) + (self.env_params.alpha*(self.global_params.eps**0.5)*(phi_dot**2)) + (self.global_params.eps*(u**2))
 
     def reset(self):
         if self.init:

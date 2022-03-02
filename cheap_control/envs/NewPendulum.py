@@ -105,7 +105,7 @@ class Pendulum(gym.Env):
         theta = self.state[0]
         theta_dot = self.state[1]
 
-        return (self.angle_normalize(theta)**2) + ((self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
+        return (self.angle_normalize(theta)**2) + (self.env_params.alpha*(self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
 
     def reset(self):
         if self.init:

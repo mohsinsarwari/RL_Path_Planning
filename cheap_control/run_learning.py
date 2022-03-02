@@ -107,6 +107,8 @@ def run_learning(params):
             # Execute learning   
             model.learn(total_timesteps=params.timesteps, callback=callback)
 
+            model.save(os.path.join(models_path, "last_model"))
+
         with open(os.path.join(path, "params.pkl"), 'wb') as pick:
             pickle.dump(params, pick, pickle.HIGHEST_PROTOCOL)
 

@@ -16,7 +16,7 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 11
+params.id = 12
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -35,7 +35,7 @@ params.use_sde = True
 
 params.envs.manipulator.env = Manipulator.Manipulator
 params.envs.manipulator.eval_env = Manipulator.Manipulator
-params.envs.manipulator.run = False
+params.envs.manipulator.run = True
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
@@ -46,6 +46,7 @@ params.envs.manipulator.min_input = -4
 params.envs.manipulator.init_low = [-0.3, -1, -0.1, -0.1] # note: the randomization of theta is around the value chosen for phi
 params.envs.manipulator.init_high = [0.3, 1, 0.1, 0.1]
 params.envs.manipulator.integration = "direct" # direct or sequential
+params.envs.manipulator.alpha = 0.25 #scale infront of theta phi dot term
 params.envs.manipulator.cost_func = 1 # 1 is: theta 2 is phi
 
 params.envs.basependulum.env = BasePendulum.PendulumEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
@@ -71,6 +72,7 @@ params.envs.newpendulum.max_input = 4
 params.envs.newpendulum.min_input = -4
 params.envs.newpendulum.init_low = [-np.pi, -1] #state, not obs
 params.envs.newpendulum.init_high = [np.pi, 1]
+params.envs.manipulator.alpha = 0.25 #scale infront of theta phi dot term
 params.envs.newpendulum.cost_func = 2 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
 
 
