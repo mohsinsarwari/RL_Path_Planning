@@ -8,7 +8,7 @@ from params import *
 cost_fn = [1, 2]
 eps = [0.1, 0.5, 1, 3, 5]
 
-combos = list(itertools.product(eps, gamma))
+combos = list(itertools.product(cost_fn, eps))
 
 num_combos = len(combos*params.trials)
 curr_combo = 0
