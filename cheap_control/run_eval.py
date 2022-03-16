@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 BASE_PATH = "./Runs"
 
-def evaluate(folder_name, model="best_model", init=None, render=False, iterations=10):
+def evaluate(folder_name, model_name="best_model", env=None, init=None, render=False, iterations=10):
 	#init = [np.pi, 0]
 
 	results = dict()
@@ -31,15 +31,15 @@ def evaluate(folder_name, model="best_model", init=None, render=False, iteration
 
 	for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
-		if not env_params.run:
+		if not env_params.run or not env_name==env:
 			continue
 
 		models_path = os.path.join(path, env_name + "/models")
 
 		if params.algorithm == "SAC":
-			model = SAC.load(os.path.join(models_path, model))
+			model = SAC.load(os.path.join(models_path, model_name))
 		elif params.algorithm == "PPO":
-			model = PPO.load(os.path.join(models_path, model))
+			model = PPO.load(os.path.join(models_path, model_name))
 
 		env_results = dict()
 		env_path = os.path.join(path, env_name)

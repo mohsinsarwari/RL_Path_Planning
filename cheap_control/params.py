@@ -16,7 +16,7 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 12
+params.id = 13
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -63,7 +63,7 @@ params.envs.baseenv.run = False
 
 params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
-params.envs.newpendulum.run = True #if you want run_learning to train on this env
+params.envs.newpendulum.run = False #if you want run_learning to train on this env
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.newpendulum.g = 10 #gravity
@@ -72,8 +72,21 @@ params.envs.newpendulum.max_input = 4
 params.envs.newpendulum.min_input = -4
 params.envs.newpendulum.init_low = [-np.pi, -1] #state, not obs
 params.envs.newpendulum.init_high = [np.pi, 1]
-params.envs.manipulator.alpha = 0.25 #scale infront of theta phi dot term
+params.envs.newpendulum.alpha = 0.25 #scale infront of theta phi dot term
 params.envs.newpendulum.cost_func = 2 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
+
+params.envs.pvtol.env = Pvtol.Pvtol
+params.envs.pvtol.eval_env = Pvtol.Pvtol
+params.envs.pvtol.run = False
+params.envs.pvtol.dt = params.dt
+params.envs.pvtol.total_time = params.total_time
+params.envs.pvtol.k = 0.01
+params.envs.pvtol.m = 1
+params.envs.pvtol.g = 1
+params.envs.pvtol.max_input = np.array([5, 2])
+params.envs.pvtol.min_input = np.array([0, -2])
+params.envs.pvtol.init_low = -1
+params.envs.pvtol.init_high = 1
 
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
@@ -89,18 +102,6 @@ params.envs.quadrotor.min_input = np.array([5, -3])
 params.envs.quadrotor.init_low = -1
 params.envs.quadrotor.init_high = 1
 
-params.envs.pvtol.env = Pvtol.Pvtol()
-params.envs.pvtol.eval_env = Pvtol.Pvtol()
-params.envs.pvtol.run = False
-params.envs.pvtol.dt = params.dt
-params.envs.pvtol.total_time = params.total_time
-params.envs.pvtol.eps = 0.01
-params.envs.pvtol.m = 1
-params.envs.pvtol.g = 2
-params.envs.pvtol.max_input = np.array([4, 1])
-params.envs.pvtol.min_input = np.array([1, -1])
-params.envs.pvtol.init_low = -1
-params.envs.pvtol.init_high = 1
 
 params.envs.cartpole.env = Cartpole.Cartpole()
 params.envs.cartpole.eval_env = Cartpole.Cartpole()

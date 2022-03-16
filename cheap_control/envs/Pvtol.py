@@ -72,8 +72,8 @@ class Pvtol(gym.Env):
         theta_dot = self.state[5]
 
         derivatives = np.array([x_dot, y_dot, theta_dot, 
-                                (-np.sin(theta)*u1) + (self.params.eps*np.cos(theta)*u2),
-                                (np.cos(theta)*u1) + (self.params.eps*np.sin(theta)*u2) - self.params.g,
+                                (-np.sin(theta)*u1) + (self.params.k*np.cos(theta)*u2),
+                                (np.cos(theta)*u1) + (self.params.k*np.sin(theta)*u2) - self.params.g,
                                 u2])
 
         self.state = self.state + (self.params.dt * derivatives)

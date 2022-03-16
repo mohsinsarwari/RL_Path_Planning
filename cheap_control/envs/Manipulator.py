@@ -75,8 +75,8 @@ class Manipulator(gym.Env):
         if (self.env_params.integration == "direct"):
 
             derivatives = np.array([theta_dot, phi_dot, 
-                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta) - self.env_params.b1*theta_dot,
-                                    self.env_params.k3*(theta-phi) + u - self.env_params.b2*phi_dot
+                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta), #damping - self.env_params.b1*theta_dot,
+                                    self.env_params.k3*(theta-phi) + u #damping- self.env_params.b2*phi_dot
                                     ])
 
             self.state = self.state + (self.global_params.dt * derivatives)
@@ -95,6 +95,10 @@ class Manipulator(gym.Env):
             costs = self.get_cost1(u)
         elif (self.env_params.cost_func == 2):
             costs = self.get_cost2(u)
+        elif (self.env_params.cost_func == 3):
+            costs = self.get_cost3(u)
+        elif (self.env_params.cost_func == 4):
+            costs = self.get_cost4(u)
 
         self.curr_step += 1
 
@@ -116,6 +120,20 @@ class Manipulator(gym.Env):
         phi_dot = self.state[3]
 
         return (phi**2) + (self.env_params.alpha*(self.global_params.eps**0.5)*(phi_dot**2)) + (self.global_params.eps*(u**2))
+
+    def get_cost3(self, u):
+
+        theta = self.angle_normalize(self.state[0])
+        theta_dot = self.state[2]
+
+        return (theta**2) + (self.global_params.eps*(u**2))
+
+    def get_cost4(self, u):
+
+        phi = self.angle_normalize(self.state[1])
+        phi_dot = self.state[3]
+
+        return (phi**2) + (self.global_params.eps*(u**2))
 
     def reset(self):
         if self.init:

@@ -12,7 +12,8 @@ from dotmap import DotMap
 from params import *
 
 #env = BasePendulum.PendulumEnv(params)
-env = Manipulator.Manipulator(params)
+env = Cartpole.Cartpole()
+env.set_params(params)
 
 for i_episode in range(10):
 	obs = env.reset()
