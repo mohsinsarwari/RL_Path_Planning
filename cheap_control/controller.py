@@ -5,7 +5,7 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-cost_fn = [3, 4]
+cost_fn = [1]
 eps = [0.1, 0.5, 1, 2, 3, 5]
 
 combos = list(itertools.product(cost_fn, eps))
@@ -21,7 +21,7 @@ for combo in combos:
 
 	#TO DO: Unpack values based on order passed into line 11
 	#params.envs.manipulator.integration = combo[0]
-	params.envs.manipulator.cost_fn = combo[0]
+	params.envs.pvtol.cost_fn = combo[0]
 	params.eps = combo[1]
 
 	for i in np.arange(params.trials):

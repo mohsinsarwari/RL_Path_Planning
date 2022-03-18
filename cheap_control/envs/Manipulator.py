@@ -51,7 +51,7 @@ class Manipulator(gym.Env):
         self.observation_space = spaces.Box(low=-high, high=high,shape=(6,), dtype=np.float32)
         
         self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
-        self.state[0] = self.state[0] + self.state[1]
+        self.state[0] = self.state[0] + self.state[1] #initialize theta around phi
 
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None

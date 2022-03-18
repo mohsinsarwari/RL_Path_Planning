@@ -12,15 +12,14 @@ from dotmap import DotMap
 from params import *
 
 #env = BasePendulum.PendulumEnv(params)
-env = Cartpole.Cartpole()
-env.set_params(params)
+env = Pvtol.Pvtol(params)
 
 for i_episode in range(10):
 	obs = env.reset()
 	done = False
 	while not done:
 		action = env.action_space.sample()
-		#action = [0]
+		#action = [1, 0.2]
 		#print(action)
 		env.render()
 		obs, reward, done, info = env.step(action)

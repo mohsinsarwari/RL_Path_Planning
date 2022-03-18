@@ -16,7 +16,7 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 13
+params.id = 14
 params.trial_id = 0
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -78,16 +78,15 @@ params.envs.newpendulum.cost_func = 2 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 +
 params.envs.pvtol.env = Pvtol.Pvtol
 params.envs.pvtol.eval_env = Pvtol.Pvtol
 params.envs.pvtol.run = False
-params.envs.pvtol.dt = params.dt
-params.envs.pvtol.total_time = params.total_time
 params.envs.pvtol.k = 0.01
 params.envs.pvtol.m = 1
 params.envs.pvtol.g = 1
+params.envs.pvtol.thresh = 10 #state threshold
 params.envs.pvtol.max_input = np.array([5, 2])
 params.envs.pvtol.min_input = np.array([0, -2])
-params.envs.pvtol.init_low = -1
-params.envs.pvtol.init_high = 1
-
+params.envs.pvtol.init_low = [-2, -2, 0, 0, 0, 0]
+params.envs.pvtol.init_high = [2, 2, 0, 0, 0, 0]
+params.envs.pvtol.cost_func = 1
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor()
