@@ -5,7 +5,7 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-cost_func = [3]
+cost_func = [4]
 eps = [0.1, 0.5, 1, 2, 3, 5]
 
 combos = list(itertools.product(cost_func, eps))

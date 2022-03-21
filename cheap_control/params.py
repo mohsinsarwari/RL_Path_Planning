@@ -15,8 +15,8 @@ params = DotMap()
 
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "AMS4"
-params.id = 16
+params.device = "AMS5"
+params.id = 17
 params.trial_id = 0 #to keep track of runs that are the same trial
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -55,7 +55,7 @@ params.envs.manipulator.init_low = [-0.3, -1, -0.1, -0.1] # note: the randomizat
 params.envs.manipulator.init_high = [0.3, 1, 0.1, 0.1]
 params.envs.manipulator.integration = "direct" # direct or sequential
 params.envs.manipulator.alpha = 0.25 #scale infront of theta phi dot term
-params.envs.manipulator.cost_func = 3 # 1/3 is: theta 2/4 is phi
+params.envs.manipulator.cost_func = 4 # 1/3 is: theta 2/4 is phi
 
 params.envs.basependulum.env = BasePendulum.PendulumEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.basependulum.eval_env = BasePendulum.PendulumEnv #extra env for eval callback
