@@ -46,7 +46,6 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 
 		env = env_params.eval_env(params, init=init)
 		#env.set_init(init)
-		env.reset()
 
 		evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
 
@@ -58,7 +57,6 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 
 		obs = env.reset()
 		done = False
-
 		while not done:
 			action, _states = model.predict(obs, deterministic=True)
 			actions.append(action[0])

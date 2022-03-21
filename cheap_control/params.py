@@ -16,8 +16,8 @@ params = DotMap()
 #General Params
 params.runner = "Mohsin" #just your first name
 params.device = "Hybrid Server"
-params.id = 14
-params.trial_id = 0
+params.id = 15
+params.trial_id = 0 #to keep track of runs that are the same trial
 params.eval_freq = 3000
 params.save_freq = 100000
 params.timesteps = 300000
@@ -28,14 +28,22 @@ params.eps = 1
 params.dt = 0.05
 params.total_time = 10
 params.trials = 2
+params.finished = False #set to true after done running
 
 params.algorithm = "SAC"
 params.use_sde = True
+
 #Env Specific Params
+params.envs.manipulator.run = False
+params.envs.basependulum.run = False
+params.envs.baseenv.run = False
+params.envs.newpendulum.run = False
+params.envs.pvtol.run = True
+params.envs.quadrotor.run = False #not ready
+params.envs.cartpole.run = False #not ready
 
 params.envs.manipulator.env = Manipulator.Manipulator
 params.envs.manipulator.eval_env = Manipulator.Manipulator
-params.envs.manipulator.run = True
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
@@ -51,7 +59,6 @@ params.envs.manipulator.cost_func = 1 # 1 is: theta 2 is phi
 
 params.envs.basependulum.env = BasePendulum.PendulumEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.basependulum.eval_env = BasePendulum.PendulumEnv #extra env for eval callback
-params.envs.basependulum.run = False
 
 params.envs.baseenv.env = BaseEnv.BaseEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.baseenv.eval_env = BaseEnv.BaseEnv #extra env for eval callback
@@ -59,11 +66,9 @@ params.envs.baseenv.max_input = 1
 params.envs.baseenv.min_input = -1
 params.envs.baseenv.init_low = -1
 params.envs.baseenv.init_high = 1
-params.envs.baseenv.run = False
 
 params.envs.newpendulum.env = NewPendulum.Pendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.newpendulum.eval_env = NewPendulum.Pendulum #extra env for eval callback
-params.envs.newpendulum.run = False #if you want run_learning to train on this env
 params.envs.newpendulum.m = 1 #mass of pendulum
 params.envs.newpendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.newpendulum.g = 10 #gravity
@@ -77,7 +82,6 @@ params.envs.newpendulum.cost_func = 2 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 +
 
 params.envs.pvtol.env = Pvtol.Pvtol
 params.envs.pvtol.eval_env = Pvtol.Pvtol
-params.envs.pvtol.run = False
 params.envs.pvtol.k = 0.01
 params.envs.pvtol.m = 1
 params.envs.pvtol.g = 1
@@ -90,7 +94,6 @@ params.envs.pvtol.cost_func = 1
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor()
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor()
-params.envs.quadrotor.run = False
 params.envs.quadrotor.dt = params.dt
 params.envs.quadrotor.total_time = params.total_time
 params.envs.quadrotor.i_xx = 1
@@ -104,7 +107,6 @@ params.envs.quadrotor.init_high = 1
 
 params.envs.cartpole.env = Cartpole.Cartpole()
 params.envs.cartpole.eval_env = Cartpole.Cartpole()
-params.envs.cartpole.run = False
 params.envs.cartpole.dt = params.dt
 params.envs.cartpole.total_time = params.total_time
 params.envs.cartpole.eps = 0.01

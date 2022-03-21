@@ -1,5 +1,5 @@
-Started current run at 03/16/2022_01:40:25 
-On Combo: 0 out of 24 
+Started current run at 03/20/2022_14:50:23 
+On Combo: 1 out of 12 
 Estimated Time Left: 0 
-Current combo started at:  03/16/2022_01:40:25 
-Current combo started at:  03/18/2022_02:52:25 
+Current combo started at:  03/20/2022_14:50:23 
+Trial 1 of 2 

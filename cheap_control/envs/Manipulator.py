@@ -138,6 +138,7 @@ class Manipulator(gym.Env):
     def reset(self):
         if self.init:
             self.state = self.init
+            self.state[0] = self.state[0] + self.state[1]
         else:
             self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
             self.state[0] = self.state[0] + self.state[1]

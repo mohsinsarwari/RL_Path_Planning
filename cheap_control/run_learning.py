@@ -41,10 +41,6 @@ def run_learning(params):
 
     #-----------Train each model for the different environments---------
 
-    f = open("./log.txt", "+a")
-    f.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
-    f.close()
-
     for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
         if not env_params.run:
@@ -106,6 +102,8 @@ def run_learning(params):
         model.learn(total_timesteps=params.timesteps, callback=callback)
 
         model.save(os.path.join(models_path, "last_model"))
+
+        params.finished = True
 
     with open(os.path.join(path, "params.pkl"), 'wb') as pick:
         pickle.dump(params, pick, pickle.HIGHEST_PROTOCOL)
