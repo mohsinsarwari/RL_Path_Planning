@@ -15,8 +15,8 @@ params = DotMap()
 
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "Hybrid Server"
-params.id = 15
+params.device = "AMS4"
+params.id = 16
 params.trial_id = 0 #to keep track of runs that are the same trial
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -34,11 +34,11 @@ params.algorithm = "SAC"
 params.use_sde = True
 
 #Env Specific Params
-params.envs.manipulator.run = False
+params.envs.manipulator.run = True
 params.envs.basependulum.run = False
 params.envs.baseenv.run = False
 params.envs.newpendulum.run = False
-params.envs.pvtol.run = True
+params.envs.pvtol.run = False
 params.envs.quadrotor.run = False #not ready
 params.envs.cartpole.run = False #not ready
 
@@ -47,15 +47,15 @@ params.envs.manipulator.eval_env = Manipulator.Manipulator
 params.envs.manipulator.k1 = 1
 params.envs.manipulator.k2 = 5
 params.envs.manipulator.k3 = 1
-params.envs.manipulator.b1 = 2
-params.envs.manipulator.b2 = 0.1
+params.envs.manipulator.b1 = 0
+params.envs.manipulator.b2 = 0
 params.envs.manipulator.max_input = 4
 params.envs.manipulator.min_input = -4
 params.envs.manipulator.init_low = [-0.3, -1, -0.1, -0.1] # note: the randomization of theta is around the value chosen for phi
 params.envs.manipulator.init_high = [0.3, 1, 0.1, 0.1]
 params.envs.manipulator.integration = "direct" # direct or sequential
 params.envs.manipulator.alpha = 0.25 #scale infront of theta phi dot term
-params.envs.manipulator.cost_func = 1 # 1 is: theta 2 is phi
+params.envs.manipulator.cost_func = 3 # 1/3 is: theta 2/4 is phi
 
 params.envs.basependulum.env = BasePendulum.PendulumEnv #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
 params.envs.basependulum.eval_env = BasePendulum.PendulumEnv #extra env for eval callback

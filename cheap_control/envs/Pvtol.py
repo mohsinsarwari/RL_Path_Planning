@@ -55,8 +55,6 @@ class Pvtol(gym.Env):
         high = np.array([self.env_params.thresh, self.env_params.thresh, 1, 1, 100000, 100000, 100000])
         self.observation_space = spaces.Box(low=-high, high=high,shape=(7,), dtype=np.float32)
 
-        self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (6,))
-
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None
         self.done = False

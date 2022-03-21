@@ -49,9 +49,6 @@ class Manipulator(gym.Env):
 
         high = np.array([1, 1, 1, 1, 100000, 100000])
         self.observation_space = spaces.Box(low=-high, high=high,shape=(6,), dtype=np.float32)
-        
-        self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
-        self.state[0] = self.state[0] + self.state[1] #initialize theta around phi
 
         self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None
@@ -75,8 +72,8 @@ class Manipulator(gym.Env):
         if (self.env_params.integration == "direct"):
 
             derivatives = np.array([theta_dot, phi_dot, 
-                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta), #damping - self.env_params.b1*theta_dot,
-                                    self.env_params.k3*(theta-phi) + u #damping- self.env_params.b2*phi_dot
+                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta), - self.env_params.b1*theta_dot,
+                                    self.env_params.k3*(theta-phi) + u - self.env_params.b2*phi_dot
                                     ])
 
             self.state = self.state + (self.global_params.dt * derivatives)
@@ -193,4 +190,3 @@ class Manipulator(gym.Env):
 
     def angle_normalize(self, x):
             return abs(((x + np.pi) % (2 * np.pi)) - np.pi)
-

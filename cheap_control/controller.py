@@ -5,7 +5,7 @@ from run_learning import *
 from params import *
 
 #TO DO: Setup values to loop over
-cost_func = [1]
+cost_func = [3]
 eps = [0.1, 0.5, 1, 2, 3, 5]
 
 combos = list(itertools.product(cost_func, eps))
@@ -27,7 +27,7 @@ while params.trial_id < num_combos:
 	startime = time.time()
 
 	#TO DO: Unpack values based on order passed into line 11
-	#params.envs.pvtol.cost_func = combo[0]
+	params.envs.manipulator.cost_func = combo[0]
 	params.eps = combo[1]
 
 	log = open("./log.txt", "+a")
