@@ -49,14 +49,17 @@ class Quadrotor(gym.Env):
         pass
 
     def set_params(self, params):
-        self.params = params
-        self.action_space = spaces.Box(low=params.min_input, high=params.max_input, shape=(2,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=params.min_state, high=params.max_state,shape=(6,), dtype=np.float32)
-        self.num_steps = self.params.total_time // self.params.dt
-        params.seed = self.seed()
+        self.init = init
+        self.global_params = params
+        self.env_params = params.envs.quadrotor
+        self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(2,), dtype=np.float32)
+        
+        high = np.array([self.env_params.thresh, self.env_params.thresh, 1, 1, 100000, 100000, 100000])
+        self.observation_space = spaces.Box(low=-high, high=high,shape=(7,), dtype=np.float32)
+
+        self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None
         self.done = False
-
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)

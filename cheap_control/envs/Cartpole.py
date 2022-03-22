@@ -60,21 +60,25 @@ class Cartpole(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 50}
 
-    def __init__(self):
-        pass
-
-    def set_params(self, params):
-        self.params = params
-        self.total_mass = params.mp + params.mc
-        self.polemass_length = params.mp * params.l
+    def __init__(self, params, init=None):
+        self.init = init
+        self.global_params = params
+        self.env_params = params.envs.cartpole
+        self.total_mass = self.env_params.mp + self.env_params.mc
+        self.polemass_length = self.env_params.mp * self.env_params.l
         self.kinematics_integrator = "euler"
 
-        self.action_space = spaces.Box(low=params.min_input, high=params.max_input, shape=(1,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=params.min_state, high=params.max_state, shape=(4,), dtype=np.float32)
-        self.num_steps = self.params.total_time // self.params.dt
-        params.seed = self.seed()
+        self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(1,), dtype=np.float32)
+        
+        high = np.array([self.env_params.thresh, 1, 1, 100000, 100000])
+        self.observation_space = spaces.Box(low=-high, high=high,shape=(5,), dtype=np.float32)
+
+        self.num_steps = self.global_params.total_time // self.global_params.dt
         self.viewer = None
         self.done = False
+
+    def set_init(self, init):
+        self.init = init
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -92,58 +96,75 @@ class Cartpole(gym.Env):
         temp = (
             force + self.polemass_length * theta_dot ** 2 * sintheta
         ) / self.total_mass
-        thetaacc = (self.params.g * sintheta - costheta * temp) / (
-            self.params.l * (4.0 / 3.0 - self.params.mp * costheta ** 2 / self.total_mass)
-        ) - (self.params.lam * theta_dot / self.params.mp)
+        thetaacc = (self.env_params.g * sintheta - costheta * temp) / (
+            self.env_params.l * (4.0 / 3.0 - self.env_params.mp * costheta ** 2 / self.total_mass)
+        ) - (self.env_params.lam * theta_dot / self.env_params.mp)
         xacc = temp - self.polemass_length * thetaacc * costheta / self.total_mass
 
         if self.kinematics_integrator == "euler":
-            x = x + self.params.dt * x_dot
-            x_dot = x_dot + self.params.dt * xacc
-            theta = theta + self.params.dt * theta_dot
-            theta_dot = theta_dot + self.params.dt * thetaacc
+            x = x + self.global_params.dt * x_dot
+            x_dot = x_dot + self.global_params.dt * xacc
+            theta = theta + self.global_params.dt * theta_dot
+            theta_dot = theta_dot + self.global_params.dt * thetaacc
         else:  # semi-implicit euler
-            x_dot = x_dot + self.params.dt * xacc
-            x = x + self.params.dt * x_dot
-            theta_dot = theta_dot + self.params.dt * thetaacc
-            theta = theta + self.params.dt * theta_dot
+            x_dot = x_dot + self.global_params.dt * xacc
+            x = x + self.global_params.dt * x_dot
+            theta_dot = theta_dot + self.global_params.dt * thetaacc
+            theta = theta + self.global_params.dt * theta_dot
 
         self.state = (x, theta, x_dot, theta_dot)
 
-        costs = self.get_cost(u)
+        if (self.env_params.cost_func == 1):
+            costs = self.get_cost1(u)
+        elif (self.env_params.cost_func == 2):
+            costs = self.get_cost2(u)
 
         self.curr_step += 1
 
         theta_normalized = self.angle_normalize(theta)
 
         self.done = bool(
-            self.curr_step == self.num_steps
-            or theta_normalized > (np.pi / 2))
+            self.curr_step == self.num_steps)
 
-        return self.state, -costs, self.done, {}
+        return self._get_obs, -costs, self.done, {}
 
-    def get_cost(self, u):
+    def _get_obs(self):
+        x, theta, x_dot, thetadot = self.state
+        return np.array([x, np.cos(theta), np.sin(theta), x_dot, thetadot])
 
-        theta = self.angle_normalize(self.state[2])
+    def get_cost1(self, u):
+
+        theta = self.state[1]
         theta_dot = self.state[3]
 
-        return (theta**2) + (self.env_params.eps*(u**2))
+        return (self.angle_normalize(theta)**2) + (self.global_params.eps*(u**2))
+
+    def get_cost2(self, u):
+
+        theta = self.state[1]
+        theta_dot = self.state[3]
+
+        return (self.angle_normalize(theta)**2) + (self.env_params.alpha*(self.global_params.eps**0.5)*(theta_dot**2)) + (self.global_params.eps*(u**2))
 
     def reset(self):
-        self.state = np.random.uniform(self.params.init_low, self.params.init_high, (4,))
+        if self.init:
+            self.state = self.init
+        else:
+            self.state = np.random.uniform(self.env_params.init_low, self.env_params.init_high, (4,))
+
         self.curr_step = 0
         self.done = False
-        return self.state
+        return self._get_obs()
 
     def render(self, mode="human"):
         screen_width = 600
         screen_height = 400
 
-        world_width = self.params.max_state * 2
+        world_width = self.env_params.thresh * 2
         scale = screen_width / world_width
         carty = 100  # TOP OF CART
         polewidth = 10.0
-        polelen = scale * (2 * self.params.l)
+        polelen = scale * (2 * self.env_params.l)
         cartwidth = 50.0
         cartheight = 30.0
 
@@ -204,3 +225,7 @@ class Cartpole(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
+
+    def angle_normalize(self, x):
+        return abs(((x + np.pi) % (2 * np.pi)) - np.pi)
+

@@ -1,65 +1,75 @@
 import time
 import datetime
 import itertools
+import argparse
 from run_learning import *
 from params import *
 
-#TO DO: Setup values to loop over
-cost_func = [4]
-eps = [0.1, 0.5, 1, 2, 3, 5]
+def sweep(name):
 
-combos = list(itertools.product(cost_func, eps))
+	checkpoint_name = "./logs/{}_checkpoint.txt".format(name)
+	log_name = "./logs/{}_log.txt".format(name)
 
-num_combos = len(combos)
+	#TO DO: Setup values to loop over
+	eps = [0.1, 0.5, 1, 2.5, 5]
+	combos = eps
+	num_combos = len(combos)
 
-#pick up from where left off
-checkpoint = open("./checkpoint.txt", "r")
-params.trial_id = int(next(checkpoint))
-checkpoint.close()
+	#pick up from where left off
+	try:
+		checkpoint = open(checkpoint_name, "r")
+		params.trial_id = int(next(checkpoint))
+		checkpoint.close()
+	except:
+		checkpoint = open(checkpoint_name, "w+")
+		checkpoint.write("0\n")
+		params.trial_id = 0
+		checkpoint.close()
 
-time_left = 0
-beginning_time = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
+	time_left = 0
+	beginning_time = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
 
-while params.trial_id < num_combos:
+	while params.trial_id < num_combos:
 
-	combo = combos[params.trial_id]
+		startime = time.time()
 
-	startime = time.time()
+		#TO DO: Unpack values based on order passed into line 11
+		params.eps = combos[params.trial_id]
 
-	#TO DO: Unpack values based on order passed into line 11
-	params.envs.manipulator.cost_func = combo[0]
-	params.eps = combo[1]
-
-	log = open("./log.txt", "+a")
-	log.truncate(0)
-	log.write("Started current run at {} \n".format(beginning_time))
-	log.write("On Combo: {} out of {} \n".format(params.trial_id+1, num_combos))
-	log.write("Estimated Time Left: {} \n".format(time_left))
-	log.write("Current combo started at:  {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
-	log.close()
-
-	for i in np.arange(params.trials):
-		log = open("./log.txt", "+a")
-		log.write("Trial {} of {} \n".format(i+1, params.trials))
+		log = open(log_name, "w")
+		log.write("Started current run at {}\n".format(beginning_time))
+		log.write("On Combo: {} out of {}\n".format(params.trial_id+1, num_combos))
+		log.write("Estimated Time Left: {}\n".format(time_left))
+		log.write("Current combo started at:  {}\n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
 		log.close()
-		run_learning(params)
+
+		for i in np.arange(params.trials):
+			log = open(log_name, "a")
+			log.write("Trial {} of {}\n".format(i+1, params.trials))
+			log.close()
+			run_learning(params)
+		
 		time_left = (time.time() - startime) * (num_combos - params.trial_id)
 		time_left = str(datetime.timedelta(seconds=time_left))
 
-	#checkpoint
-	params.trial_id += 1
-	checkpoint = open("./checkpoint.txt", "w")
-	checkpoint.write("{}\n".format(params.trial_id))
+		#checkpoint
+		params.trial_id += 1
+		checkpoint = open(checkpoint_name, "w")
+		checkpoint.write("{}\n".format(params.trial_id))
+		checkpoint.close()
+
+	checkpoint = open(checkpoint_name, "w")
+	checkpoint.write("0\n")
 	checkpoint.close()
 
-	
-checkpoint = open("./checkpoint.txt", "w")
-checkpoint.write("{}\n".format(0))
-checkpoint.close()
+	log = open(log_name, "w")
+	log.write("Done\n")
+	log.write("Started: {}\n".format(beginning_time))
+	log.write("Finished: {}\n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
+	log.close()
 
-log = open("./log.txt", "+a")
-log.truncate(0)
-log.write("Done \n")
-log.write("Started: {} \n".format(beginning_time))
-log.write("Finished: {} \n".format(datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")))
-log.close()
+if __name__=="__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-name', '-n', type=str, default=None, help='Name of sweep.  Default: None')
+	args = parser.parse_args()
+	sweep(args.name)

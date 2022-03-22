@@ -46,7 +46,6 @@ class Pvtol(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self,  params, init=None):
-        self.curr_eval = 0
         self.init = init
         self.global_params = params
         self.env_params = params.envs.pvtol

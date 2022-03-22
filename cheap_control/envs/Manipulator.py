@@ -34,14 +34,12 @@ class Manipulator(gym.Env):
         All observations are assigned a uniform random value in [-1..1]
 
     Episode Termination:
-        ????
         Time based
     """
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self, params, init=None):
-        self.curr_eval = 0
         self.init = init
         self.global_params = params
         self.env_params = params.envs.manipulator
@@ -72,8 +70,8 @@ class Manipulator(gym.Env):
         if (self.env_params.integration == "direct"):
 
             derivatives = np.array([theta_dot, phi_dot, 
-                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta) - self.env_params.b1*theta_dot,
-                                    self.env_params.k3*(theta-phi) + u - self.env_params.b2*phi_dot
+                                    self.env_params.k1*np.sin(theta) + self.env_params.k2*(phi-theta), #- self.env_params.b1*theta_dot,
+                                    self.env_params.k3*(theta-phi) + u #- self.env_params.b2*phi_dot
                                     ])
 
             self.state = self.state + (self.global_params.dt * derivatives)
