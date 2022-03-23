@@ -115,9 +115,9 @@ class Cartpole(gym.Env):
         self.state = (x, theta, x_dot, theta_dot)
 
         if (self.env_params.cost_func == 1):
-            costs = self.get_cost1(u)
+            costs = self.get_cost1(force)
         elif (self.env_params.cost_func == 2):
-            costs = self.get_cost2(u)
+            costs = self.get_cost2(force)
 
         self.curr_step += 1
 
@@ -126,7 +126,7 @@ class Cartpole(gym.Env):
         self.done = bool(
             self.curr_step == self.num_steps)
 
-        return self._get_obs, -costs, self.done, {}
+        return self._get_obs(), -costs, self.done, {}
 
     def _get_obs(self):
         x, theta, x_dot, thetadot = self.state
