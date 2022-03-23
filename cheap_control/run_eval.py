@@ -20,7 +20,6 @@ import matplotlib.pyplot as plt
 BASE_PATH = "./Runs"
 
 def evaluate(folder_name, model_name="best_model", env=None, init=None, render=False, iterations=10):
-	#init = [np.pi, 0]
 
 	results = dict()
 
@@ -31,7 +30,7 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 
 	for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
-		if not env_params.run or not env_name==env:
+		if env_name != "pvtol":
 			continue
 
 		models_path = os.path.join(path, env_name + "/models")
@@ -45,15 +44,13 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 		env_path = os.path.join(path, env_name)
 
 		env = env_params.eval_env(params, init=init)
-		#env.set_init(init)
 
 		evaluations = np.load(os.path.join(env_path, "evaluations.npz"))
 
 		env_results["mean_reward"] = [evaluations["timesteps"], evaluations["results"]]
 
 		actions = []
-		thetas = []
-		phis = []
+		states = []
 
 		obs = env.reset()
 		done = False
@@ -61,17 +58,14 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 			action, _states = model.predict(obs, deterministic=True)
 			actions.append(action[0])
 			obs, rewards, done, info = env.step(action)
-			thetas.append(angle_normalize(env.state[0]))
-			phis.append(angle_normalize(env.state[1]))
-			#thetas.append(env.state[0] % (2*np.pi))
+			states.append(env.state)
 			if render:
 				env.render()
 
 		env.reset()
 
 		env_results["actions"] = actions
-		env_results["thetas"] = thetas
-		env_results["phis"] = phis
+		env_results["states"] = np.array(states)
 
 		results[env_name] = env_results
 
@@ -90,5 +84,5 @@ if __name__=="__main__":
 	if args.folder:
 		evaluate(args.folder, render=True)
 	else:
-		evaluate("02_15_2022_123458_Mohsin", render=True)
+		evaluate("02_15_2022_123458_Mohsin", init=[1.5, 1.5, 0, 0, 0, 0, 0], render=True)
 

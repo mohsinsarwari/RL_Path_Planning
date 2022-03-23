@@ -11,7 +11,7 @@ import pickle
 from dotmap import DotMap
 from params import *
 
-env = Cartpole.Cartpole(params, init=[0, 0, 0, 0])
+env = Manipulator.Manipulator(params)
 
 for i_episode in range(10):
 	obs = env.reset()
