@@ -36,8 +36,6 @@ def sweep(name):
 		#TO DO: Unpack values based on order passed into line 11
 		params.eps = combos[params.trial_id]
 
-		print(params.eps)
-
 		log = open(log_name, "w")
 		log.write("Started current run at {}\n".format(beginning_time))
 		log.write("On Combo: {} out of {}\n".format(params.trial_id+1, num_combos))
@@ -49,8 +47,7 @@ def sweep(name):
 			log = open(log_name, "a")
 			log.write("Trial {} of {}\n".format(i+1, params.trials))
 			log.close()
-			time.sleep(2)
-			#run_learning(params)
+			run_learning(params)
 		
 		time_left = (time.time() - startime) * (num_combos - params.trial_id)
 		time_left = str(datetime.timedelta(seconds=time_left))

@@ -30,7 +30,7 @@ def evaluate(folder_name, model_name="best_model", env=None, init=None, render=F
 
 	for env_name, env_params in zip(params.envs.keys(), params.envs.values()):
 
-		if env_name != "pvtol":
+		if not (params.envs[env_name].run):
 			continue
 
 		models_path = os.path.join(path, env_name + "/models")
@@ -84,5 +84,5 @@ if __name__=="__main__":
 	if args.folder:
 		evaluate(args.folder, render=True)
 	else:
-		evaluate("02_15_2022_123458_Mohsin", init=[1.5, 1.5, 0, 0, 0, 0, 0], render=True)
+		evaluate("02_15_2022_123458_Mohsin", render=True)
 

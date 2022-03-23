@@ -18,8 +18,8 @@ class Pvtol(gym.Env):
     Observation:
         Type: Box(6)
         Num     Observation               Min                     Max
-        0       x-position                -5                       5
-        1       y-position                -5                       5
+        0       x-position                -10                      10
+        1       y-position                -10                      10
         2       cos(theta)               -1                        1
         3       sin(theta)               -1                        1
         4       x-dot                    -100000                  100000
@@ -36,7 +36,7 @@ class Pvtol(gym.Env):
         Cost function part of params
 
     Starting State:
-        All observations are assigned a uniform random value in [-1..1]
+        All observations are assigned a uniform random value in [-5..5]
 
     Episode Termination:
         ????
@@ -51,7 +51,7 @@ class Pvtol(gym.Env):
         self.env_params = params.envs.pvtol
         self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(2,), dtype=np.float32)
         
-        high = np.array([self.env_params.thresh, self.env_params.thresh, 1, 1, 100000, 100000, 100000])
+        high = np.array([100000, 100000, 1, 1, 100000, 100000, 100000])
         self.observation_space = spaces.Box(low=-high, high=high,shape=(7,), dtype=np.float32)
 
         self.num_steps = self.global_params.total_time // self.global_params.dt
@@ -85,6 +85,8 @@ class Pvtol(gym.Env):
 
         if (self.env_params.cost_func == 1):
             costs = self.get_cost1(u)
+        elif (self.env_params.cost_func == 2):
+            costs = self.get_cost2(u)
 
         self.curr_step += 1
 
@@ -101,6 +103,17 @@ class Pvtol(gym.Env):
         y = self.state[1]
 
         return (x**2) + (y**2) + (self.global_params.eps*((u1-self.env_params.g)**2 + u2**2))
+
+    def get_cost2(self, u):
+
+        u1 = u[0]
+        u2 = u[1]
+        x = self.state[0]
+        y = self.state[1]
+        x_dot = self.state[3]
+        y_dot = self.state[4]
+
+        return (x**2) + (y**2) + ((self.global_params.eps**0.5)*(x_dot**2 + y_dot**2)) + (self.global_params.eps*((u1-self.env_params.g)**2 + u2**2))
 
     def reset(self):
         if self.init:

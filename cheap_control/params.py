@@ -15,8 +15,8 @@ params = DotMap()
 
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "AMS4"
-params.id = 25
+params.device = "AMS5"
+params.id = 31
 params.trial_id = 0 #to keep track of runs that are the same trial
 params.eval_freq = 3000
 params.save_freq = 100000
@@ -33,9 +33,9 @@ params.algorithm = "SAC"
 params.use_sde = True
 
 #Env Specific Params
-params.envs.manipulator.run = True
+params.envs.manipulator.run = False
 params.envs.pendulum.run = False
-params.envs.pvtol.run = False
+params.envs.pvtol.run = True
 params.envs.cartpole.run = False
 params.envs.basependulum.run = False
 params.envs.baseenv.run = False
@@ -86,9 +86,9 @@ params.envs.pvtol.g = 1
 params.envs.pvtol.thresh = 10 #state threshold
 params.envs.pvtol.max_input = np.array([5, 2])
 params.envs.pvtol.min_input = np.array([0, -2])
-params.envs.pvtol.init_low = [-2, -2, 0, 0, 0, 0]
-params.envs.pvtol.init_high = [2, 2, 0, 0, 0, 0]
-params.envs.pvtol.cost_func = 1
+params.envs.pvtol.init_low = [-5, -5, 0, 0, 0, 0]
+params.envs.pvtol.init_high = [5, 5, 0, 0, 0, 0]
+params.envs.pvtol.cost_func = 2
 
 params.envs.quadrotor.env = Quadrotor.Quadrotor
 params.envs.quadrotor.eval_env = Quadrotor.Quadrotor
