@@ -15,8 +15,8 @@ params = DotMap()
 
 #General Params
 params.runner = "Mohsin" #just your first name
-params.device = "AMS5"
-params.id = 31
+params.device = "AMS4"
+params.id = 32
 params.trial_id = 0 #to keep track of runs that are the same trial
 params.eval_freq = 3000
 params.save_freq = 100000
