@@ -11,7 +11,7 @@ def sweep(name):
 	log_name = "./logs/{}_log.txt".format(name)
 
 	#TO DO: Setup values to loop over
-	eps = [0.1, 0.5, 1, 2.5, 5]
+	eps = [0.1, 0.5, 1, 2.5]
 	combos = eps
 	num_combos = len(combos)
 
