@@ -11,8 +11,8 @@ def sweep(name):
 	log_name = "./logs/{}_log.txt".format(name)
 
 	#TO DO: Setup values to loop over
-	eps = [0.1, 0.5, 1, 2.5]
-	combos = eps
+	init_max = [1, 2, 3, 4, 5]
+	combos = init_max
 	num_combos = len(combos)
 
 	#pick up from where left off
@@ -34,7 +34,8 @@ def sweep(name):
 		startime = time.time()
 
 		#TO DO: Unpack values based on order passed into line 11
-		params.eps = combos[params.trial_id]
+		params.envs.pendulum.max_input = combos[params.trial_id]
+		params.envs.pendulum.min_input = -combos[params.trial_id]
 
 		log = open(log_name, "w")
 		log.write("Started current run at {}\n".format(beginning_time))
