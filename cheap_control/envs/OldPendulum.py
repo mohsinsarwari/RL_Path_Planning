@@ -5,7 +5,7 @@ import numpy as np
 from os import path
 
 
-class Pendulum(gym.Env):
+class OldPendulum(gym.Env):
     """
     Description:
         Pendulum model with 1 input: torque about its center.
@@ -44,7 +44,7 @@ class Pendulum(gym.Env):
         self.init = init
         high = np.array([1, 1, 100000])
         self.global_params = params
-        self.env_params = params.envs.pendulum
+        self.env_params = params.envs.oldpendulum
         self.action_space = spaces.Box(low=self.env_params.min_input, high=self.env_params.max_input, shape=(1,), dtype=np.float32)
         self.observation_space = spaces.Box(low=-high, high=high, shape=(3,), dtype=np.float32)
 
@@ -68,10 +68,10 @@ class Pendulum(gym.Env):
         theta_dot = self.state[1] 
         u = action[0]
 
-        newtheta_dot = theta_dot + (((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) + (3 * u / (self.env_params.m * self.env_params.l**2)) - (self.env_params.lam * theta_dot)) * self.global_params.dt
-        newth = theta + newtheta_dot * self.global_params.dt
+        derivatives = np.array([theta_dot, 
+                                ((3 * self.env_params.g / (2*self.env_params.l)) * np.sin(theta)) + (3 * u / (self.env_params.m * self.env_params.l**2)) - (self.env_params.lam * theta_dot)])
 
-        self.state = np.array([newth, newtheta_dot])
+        self.state = [theta, theta_dot] + (self.global_params.dt * derivatives)
 
         if (self.env_params.cost_func == 1):
             costs = self.get_cost1(u)

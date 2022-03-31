@@ -35,6 +35,7 @@ params.use_sde = True
 #Env Specific Params
 params.envs.manipulator.run = False
 params.envs.pendulum.run = True
+params.envs.oldpendulum.run = True
 params.envs.pvtol.run = False
 params.envs.cartpole.run = False
 params.envs.basependulum.run = False
@@ -71,12 +72,26 @@ params.envs.pendulum.eval_env = Pendulum.Pendulum #extra env for eval callback
 params.envs.pendulum.m = 1 #mass of pendulum
 params.envs.pendulum.l = 1 #half the length of pendulum (length to com)
 params.envs.pendulum.g = 10 #gravity
+params.envs.pendulum.lam = 0.6 #damping
 params.envs.pendulum.max_input = 4
 params.envs.pendulum.min_input = -4
 params.envs.pendulum.init_low = [-np.pi, -1] #state, not obs
 params.envs.pendulum.init_high = [np.pi, 1]
 params.envs.pendulum.alpha = 0.25 #scale infront of theta phi dot term
 params.envs.pendulum.cost_func = 1 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
+
+params.envs.oldpendulum.env = OldPendulum.OldPendulum #state = [th, th_dot], but obs = [sin(th), cos(th), th_dot]
+params.envs.oldpendulum.eval_env = OldPendulum.OldPendulum #extra env for eval callback
+params.envs.oldpendulum.m = 1 #mass of pendulum
+params.envs.oldpendulum.l = 1 #half the length of pendulum (length to com)
+params.envs.oldpendulum.g = 10 #gravity
+params.envs.oldpendulum.lam = 0.7 #damping
+params.envs.oldpendulum.max_input = 4
+params.envs.oldpendulum.min_input = -4
+params.envs.oldpendulum.init_low = [-np.pi, -1] #state, not obs
+params.envs.oldpendulum.init_high = [np.pi, 1]
+params.envs.oldpendulum.alpha = 0.25 #scale infront of theta phi dot term
+params.envs.oldpendulum.cost_func = 1 # 1 is: theta^2 + eps*u^2; 2 is: theta^2 + sqrt(eps)*theta_dot^2 + eps*u^2
 
 params.envs.pvtol.env = Pvtol.Pvtol
 params.envs.pvtol.eval_env = Pvtol.Pvtol
